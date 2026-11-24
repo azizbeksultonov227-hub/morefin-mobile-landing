@@ -2,28 +2,30 @@
 
 import { ArrowRight } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
 import "./income-flow.css";
 
-// The Morefin site's income workflow (src/sections/AppHero.tsx), with its scroll story, set in this page's own
-// language: the hero card's ledger (hairline rules, mono tabular figures), one blue for the money that stays and
-// greys for the money that leaves, and schematic wiring between the three steps. GSAP's ScrollTrigger is replaced by
-// a plain scroll listener; phones keep the wide three-column board, shrunk to the screen's width.
+// A port of the Morefin site's income workflow (src/sections/AppHero.tsx + income-flow.css), same look and same
+// scroll story. Two changes: GSAP's ScrollTrigger is replaced by a plain scroll listener (no new library), and phones
+// keep the wide three-column board, shrunk to the screen's width, instead of the site's one-panel-at-a-time strip.
 
 // One income and four percentage rules. The percentages are exact on purpose:
-// 5,87% is calculated as 5,87%, never rounded to 6.
+// 5,87% is calculated as 5,87%, never rounded to 6. Each rule has its own
+// colour, shared by its card, its connectors and its slice of the result;
+// they are this page's colours: primary, slate, accent and amber.
 const RULES = [
-  { key: "share", percent: 5.87 },
-  { key: "tax", percent: 4 },
-  { key: "kpi", percent: 2 },
+  { key: "share", percent: 5.87, color: "#1F4FEA" },
+  { key: "tax", percent: 4, color: "#64748B" },
+  { key: "kpi", percent: 2, color: "#3B9DFB" },
   // Running costs are the largest slice; what remains is a little over half.
-  { key: "fee", percent: 30 },
+  { key: "fee", percent: 30, color: "#F59E0B" },
 ] as const;
-const REST = Number((100 - RULES.reduce((sum, rule) => sum + rule.percent, 0)).toFixed(2));
-const INCOMES = [12_000_000, 5_000_000, 40_000_000];
 // a heading's words light up one after another while the section scrolls in, like every heading on this page
 const DIM = 0.18;
+const REST = 100 - RULES.reduce((sum, rule) => sum + rule.percent, 0);
+const COINS = 7;
+const INCOMES = [12_000_000, 5_000_000, 40_000_000];
 
 const group = (value: number) => Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 const percentText = (value: number, locale: string) => String(value).replace(".", locale === "en" ? "." : ",");
@@ -31,16 +33,17 @@ const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const span = (progress: number, from: number, to: number) => clamp((progress - from) / (to - from));
 const ease = (value: number) => 1 - Math.pow(1 - value, 3);
 
-type Wire = { role: "in" | "out"; index: number; d: string };
+type Wire = { role: "in" | "out"; index: number; from: string; to: string };
 
-// A schematic connector: out horizontally, one vertical run at the midpoint, in horizontally, with small rounded
-// corners. Every income wire shares the same trunk, so the four read as one line that branches.
-function elbow(x1: number, y1: number, x2: number, y2: number, corner: number) {
-  if (Math.abs(y2 - y1) < 0.5) return `M${x1} ${y1} H${x2}`;
-  const mid = (x1 + x2) / 2;
-  const r = Math.min(corner, Math.abs(y2 - y1) / 2, (x2 - x1) / 4);
-  const s = y2 > y1 ? 1 : -1;
-  return `M${x1} ${y1} H${mid - r} Q${mid} ${y1} ${mid} ${y1 + s * r} V${y2 - s * r} Q${mid} ${y2} ${mid + r} ${y2} H${x2}`;
+function RuleIcon({ kind }: { kind: (typeof RULES)[number]["key"] }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {kind === "share" ? <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6M16 5.2a3.2 3.2 0 0 1 0 5.6M17.5 14.6c1.6.6 2.6 2 3 4.4" /></>
+        : kind === "tax" ? <><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" /><path d="m9.5 13.5 5-5M9.6 9h.01M14.4 13.4h.01" /></>
+        : kind === "kpi" ? <><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="4.2" /><path d="M12 12l6.5-6.5" /></>
+        : <><rect x="3" y="6" width="18" height="12.5" rx="2.6" /><path d="M3 10.5h18M7 15h3.5" /></>}
+    </svg>
+  );
 }
 
 function Start({ label, lead }: { label: string; lead: string }) {
@@ -55,12 +58,12 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   const f = t.flow;
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLElement>(null);
-  // lead: the section scrolling into view (the heading lights up, the board rises); progress: the pinned track, 0 to 1
+  // lead: the section scrolling into view (the heading fades in); progress: the pinned track, 0 to 1
   const leadRef = useRef(0);
   const progressRef = useRef(0);
   const incomeRef = useRef(INCOMES[0]);
   const [income, setIncome] = useState(0);
-  const [wires, setWires] = useState<Wire[]>([]);
+  const [wires, setWires] = useState<Array<Wire & { d: string }>>([]);
 
   // Paint one frame of the story. Runs on every scroll tick and every income
   // change, so it writes to the DOM directly instead of re-rendering React.
@@ -68,20 +71,23 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     const root = rootRef.current;
     if (!root) return;
     const lead = reduced ? 1 : leadRef.current;
-    const progress = reduced ? 1 : progressRef.current;
-    // Act one, while the section scrolls in: the heading's words light up and the board rises into place under it.
+    const scroll = reduced ? 1 : progressRef.current;
+    // Act one, while the section scrolls in: the heading's words light up and the
+    // workflow rises from below into place under it. (On the site the heading first
+    // waits alone mid-screen; here that half screen of empty page is left out.)
     const dock = reduced ? 1 : ease(span(lead, 0.35, 0.95));
     const stage = root.querySelector<HTMLElement>(".if-stage")!;
+    const head = root.querySelector<HTMLElement>(".if-head")!;
     const body = root.querySelector<HTMLElement>(".if-body")!;
-    const words = root.querySelectorAll<HTMLElement>(".if-word");
     const lit = span(lead, 0.2, 0.75);
+    const words = head.querySelectorAll<HTMLElement>(".if-word");
     words.forEach((word, index) => { word.style.opacity = String(DIM + (1 - DIM) * span(lit, index / words.length, (index + 1) / words.length)); });
     body.style.transform = dock < 1 ? `translate3d(0, ${stage.clientHeight * 0.4 * (1 - dock)}px, 0)` : "";
     body.style.opacity = String(dock);
-
     // Act two, pinned: the workflow itself plays over the whole track.
+    const progress = scroll;
     const amount = incomeRef.current;
-    // Draw a connector up to `value` and ride a small dot on its leading end.
+    // Draw a connector up to `value` and ride a pulse on its leading end.
     const wire = (name: string, value: number) => {
       const path = root.querySelector<SVGPathElement>(`[data-wire="${name}"]`);
       const pulse = root.querySelector<SVGCircleElement>(`[data-pulse="${name}"]`);
@@ -95,18 +101,25 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       pulse.setAttribute("cx", String(point.x));
       pulse.setAttribute("cy", String(point.y));
     };
-    // The income lands first: the figure counts up from zero. Only then is it distributed.
-    const arrived = span(progress, 0.02, 0.14);
-    root.querySelector<HTMLElement>(".if-income-node")!.classList.toggle("is-on", arrived >= 1);
+    // Act three opens with the income itself: coins fall into the card and the
+    // figure counts up from zero. Only then is it distributed.
+    const arrived = span(progress, 0.035, 0.158);
+    const incomeNode = root.querySelector<HTMLElement>(".if-income-node")!;
+    incomeNode.classList.toggle("is-on", arrived >= 1);
     root.querySelectorAll<HTMLElement>(".if-income strong b").forEach((node, index) => { node.textContent = group(INCOMES[index] * arrived); });
+    root.querySelectorAll<HTMLElement>(".if-coins i").forEach((coin, index) => {
+      const fall = span(progress, 0.008 + index * 0.014, 0.072 + index * 0.014);
+      coin.style.setProperty("--fall", String(fall));
+      coin.style.opacity = fall <= 0 || fall >= 1 ? "0" : "1";
+    });
 
     const settle = ease(span(progress, 0.8, 0.9));
     let deducted = 0;
     RULES.forEach((rule, index) => {
       const begin = 0.18 + index * 0.1;
       const line = span(progress, begin, begin + 0.07);
-      // The connector arrives, the row's rule fills from left to right, and only
-      // then does its amount appear and count up.
+      // The connector arrives, the card loads from left to right, and only
+      // then does its information appear and the amount count up.
       const load = span(progress, begin + 0.07, begin + 0.13);
       const count = ease(span(progress, begin + 0.13, begin + 0.2));
       const full = (amount * rule.percent) / 100;
@@ -143,18 +156,23 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     const board = root.querySelector<HTMLElement>(".if-board")!;
     const measure = () => {
       const frame = board.getBoundingClientRect();
-      const box = (el: Element) => {
-        const rect = el.getBoundingClientRect();
-        return { left: rect.left - frame.left, right: rect.right - frame.left, cy: rect.top - frame.top + rect.height / 2 };
+      const box = (selector: string) => {
+        const rect = board.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+        return { left: rect.left - frame.left, right: rect.right - frame.left, top: rect.top - frame.top, bottom: rect.bottom - frame.top, cy: rect.top - frame.top + rect.height / 2 };
       };
-      const corner = parseFloat(getComputedStyle(board).fontSize) * 0.6;
-      const a = box(board.querySelector(".if-income-node")!);
-      const b = box(board.querySelector(".if-result")!);
-      const rows = [...board.querySelectorAll("[data-rule]")].map(box);
-      setWires([
-        ...rows.map((row, index) => ({ role: "in" as const, index, d: elbow(a.right, a.cy, row.left, row.cy, corner) })),
-        ...rows.map((row, index) => ({ role: "out" as const, index, d: elbow(row.right, row.cy, b.left, b.cy, corner) })),
-      ]);
+      const list: Wire[] = [
+        ...RULES.map((rule, index) => ({ role: "in" as const, index, from: ".if-income-node", to: `[data-rule="${rule.key}"]` })),
+        ...RULES.map((rule, index) => ({ role: "out" as const, index, from: `[data-rule="${rule.key}"]`, to: ".if-result" })),
+      ];
+      setWires(list.map((w) => {
+        const a = box(w.from), b = box(w.to);
+        // Fan lines leave and arrive spread along the card's edge, not from one point.
+        const spread = (w.index - (RULES.length - 1) / 2) * Math.min(14, (w.role === "in" ? a.bottom - a.top : b.bottom - b.top) / 9);
+        const ay = w.role === "in" ? a.cy + spread : a.cy;
+        const by = w.role === "out" ? b.cy + spread : b.cy;
+        const bend = (b.left - a.right) / 2;
+        return { ...w, d: `M${a.right} ${ay} C${a.right + bend} ${ay} ${b.left - bend} ${by} ${b.left} ${by}` };
+      }));
       paintRef.current();
     };
     // a ResizeObserver reports once right away, then on every size change
@@ -195,13 +213,14 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     };
   }, [reduced]);
 
-  const choose = (index: number) => {
+  const choose = (next: number) => {
+    const index = (next + INCOMES.length) % INCOMES.length;
     incomeRef.current = INCOMES[index];
     setIncome(index);
     const strip = rootRef.current?.querySelector<HTMLElement>(".if-incomes");
     strip?.scrollTo({ left: strip.clientWidth * index, behavior: reduced ? "auto" : "smooth" });
   };
-  // A swipe moves the strip; the figure it settles on becomes the income.
+  // A swipe moves the strip; the card it settles on becomes the income.
   const onSwipe = (event: React.UIEvent<HTMLDivElement>) => {
     const strip = event.currentTarget;
     const index = Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth));
@@ -226,12 +245,15 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
           <div className="if-body">
             <div className="if-board">
               <svg className="if-wires" aria-hidden="true">
-                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} />)}
-                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={3} />)}
+                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": RULES[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={5} />)}
               </svg>
 
               <div className="if-column">
-                <span className="if-step"><i>01</i>{f.steps[0]}</span>
+                <span className="if-step"><i>1</i>{f.steps[0]}</span>
+                <div className="if-coins" aria-hidden="true">
+                  {Array.from({ length: COINS }, (_, index) => <i key={index} style={{ "--x": `${12 + ((index * 37) % 76)}%`, "--spin": `${(index % 2 ? -1 : 1) * (30 + index * 12)}deg` } as CSSProperties} />)}
+                </div>
                 <div className="if-node if-income-node">
                   <div className="if-income-top">
                     <span className="if-income-status"><i /><span className="if-when-off">{f.waiting}</span><span className="if-when-on">{f.incoming}</span></span>
@@ -245,25 +267,22 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
                       </div>
                     ))}
                   </div>
-                  {/* the three ways money comes in, each with its own example income */}
-                  <div className="if-tabs" role="group" aria-label={f.swipe}>
-                    {INCOMES.map((amount, index) => (
-                      <button key={amount} type="button" aria-pressed={index === income} onClick={() => choose(index)}>{f.methods[index]}</button>
-                    ))}
+                  <div className="if-swipe" title={f.swipe}>
+                    <button type="button" onClick={() => choose(income - 1)} aria-label={f.previous}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6-6 6 6 6" /></svg></button>
+                    <span className="if-dots" aria-hidden="true">{INCOMES.map((amount, index) => <i key={amount} data-on={index === income} />)}</span>
+                    <button type="button" onClick={() => choose(income + 1)} aria-label={f.next}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6" /></svg></button>
                   </div>
                 </div>
               </div>
 
               <div className="if-column">
-                <span className="if-step"><i>02</i>{f.steps[1]}</span>
-                <div className="if-node if-rules">
-                  <div className="if-rules-head" aria-hidden="true"><span /><span /><span>%</span><span>{t.currency}</span></div>
-                  {RULES.map((rule, index) => (
-                    <div className="if-rule" data-rule={rule.key} key={rule.key}>
-                      <span className="if-rule-index">{String(index + 1).padStart(2, "0")}</span>
+                <span className="if-step"><i>2</i>{f.steps[1]}</span>
+                <div className="if-rules">
+                  {RULES.map((rule) => (
+                    <div className="if-node if-rule" data-rule={rule.key} key={rule.key} style={{ "--tone": rule.color } as CSSProperties}>
+                      <span className="if-rule-icon"><RuleIcon kind={rule.key} /></span>
                       <span className="if-rule-name"><b>{f.rules[rule.key].name}</b><small>{f.rules[rule.key].detail}</small></span>
-                      <em className="if-rule-percent">{percentText(rule.percent, locale)}</em>
-                      <span className="if-rule-amount">−<b>0</b></span>
+                      <span className="if-rule-amount"><span><b>0</b> <small>{t.currency}</small></span><em>{percentText(rule.percent, locale)}%</em></span>
                       <i className="if-rule-load" aria-hidden="true" />
                     </div>
                   ))}
@@ -271,34 +290,30 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
               </div>
 
               <div className="if-column">
-                <span className="if-step"><i>03</i>{f.steps[2]}</span>
+                <span className="if-step"><i>3</i>{f.steps[2]}</span>
                 <div className="if-node if-result">
                   <small>{f.net}</small>
-                  <strong className="if-result-amount"><b>0</b><span>{t.currency}</span></strong>
+                  <strong className="if-result-amount"><b>{group(INCOMES[0])}</b> <span>{t.currency}</span></strong>
                   <span className="if-split-label">{f.split}</span>
-                  {/* what stays leads, in blue; what left follows in greys */}
                   <div className="if-split" aria-hidden="true">
+                    {RULES.map((rule, index) => <i key={rule.key} style={{ background: rule.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
                     <i className="if-split-rest" style={{ flexGrow: REST }} />
-                    {RULES.map((rule, index) => <i key={rule.key} data-shade={index} style={{ flexGrow: `var(--slice-${index}, 0)` } as unknown as React.CSSProperties} />)}
                   </div>
                   <ul className="if-legend">
-                    <li><i className="if-split-rest" />{f.net}<em>{percentText(REST, locale)}%</em></li>
-                    {RULES.map((rule, index) => <li key={rule.key}><i data-shade={index} />{f.rules[rule.key].name}<em>{percentText(rule.percent, locale)}%</em></li>)}
+                    {RULES.map((rule) => <li key={rule.key}><i style={{ background: rule.color }} />{f.rules[rule.key].name}</li>)}
                   </ul>
                   <span className="if-done"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>{f.done}</span>
                 </div>
               </div>
             </div>
 
-            <div className="if-foot">
-              <div className="if-stat">
-                <strong className="if-stat-value">0%</strong>
-                <span className="if-stat-text">{f.statCaption}</span>
-                <span className="if-stat-bar" aria-hidden="true"><i /></span>
-                <span className="if-stat-rest">5% {f.manual}</span>
-              </div>
-              <div className="if-cta"><Start label={start} lead="flow" /></div>
+            <div className="if-stat">
+              <strong className="if-stat-value">0%</strong>
+              <span className="if-stat-text">{f.statCaption}</span>
+              <span className="if-stat-bar" aria-hidden="true"><i /></span>
+              <span className="if-stat-rest">5% {f.manual}</span>
             </div>
+            <div className="if-cta"><Start label={start} lead="flow" /></div>
           </div>
         </div>
       </div>
