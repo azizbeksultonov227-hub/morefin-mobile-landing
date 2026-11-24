@@ -35,7 +35,7 @@
 .income-flow .if-wires circle { fill: #fff; opacity: 0; filter: drop-shadow(0 0 7px rgb(255 255 255 / .95)); }
 .income-flow .if-wires circle.is-on { opacity: 1; }
 
-.income-flow .if-node { position: relative; box-sizing: border-box; border-radius: 1.5em; background: #fff; color: var(--ink); box-shadow: 0 1.4em 3em -1.5em rgb(10 37 64 / .6), 0 0 0 1px rgb(255 255 255 / .6); }
+.income-flow .if-node { position: relative; box-sizing: border-box; border-radius: 1.5em; background: #fff; color: var(--ink); box-shadow: 0 1.4em 3em -1.5em rgb(10 37 64 / .6); }
 
 /* 1 - income: a status line, one large figure, one line of context. */
 .income-flow .if-income-node { padding: 1.35em 1.4em 1.05em; }
@@ -79,8 +79,8 @@
 /* 2 - rules: a light icon, the name, and on the right the amount over the
    percentage that produced it. A hairline fills as the amount is counted. */
 .income-flow .if-rules { display: flex; flex-direction: column; gap: .8em; }
-.income-flow .if-rule { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .9em; padding: .95em 1.2em .95em .95em; overflow: hidden; background: rgb(255 255 255 / .12); color: #fff; box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, color .28s ease-out, box-shadow .28s ease-out, transform .28s ease-out; }
-.income-flow .if-rule.is-on { background: #fff; color: var(--ink); box-shadow: 0 1.2em 2.6em -1.4em rgb(10 37 64 / .55), 0 0 0 1px rgb(255 255 255 / .6); transform: translateX(.2em); }
+.income-flow .if-rule { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .9em; padding: .95em 1.2em .95em .95em; overflow: hidden; background: rgb(255 255 255 / .12); color: #fff; box-shadow: none; transition: background-color .28s ease-out, color .28s ease-out, box-shadow .28s ease-out, transform .28s ease-out; }
+.income-flow .if-rule.is-on { background: #fff; color: var(--ink); box-shadow: 0 1.2em 2.6em -1.4em rgb(10 37 64 / .55); transform: translateX(.2em); }
 .income-flow .if-rule-icon { display: grid; place-items: center; width: 2.35em; height: 2.35em; border-radius: 50%; background: rgb(255 255 255 / .16); color: #fff; transition: background-color .28s ease-out, color .28s ease-out; }
 .income-flow .if-rule.is-on .if-rule-icon { background: color-mix(in srgb, var(--tone) 13%, #fff); color: var(--tone); }
 .income-flow .if-rule-icon svg { width: 1.2em; height: 1.2em; }
@@ -108,8 +108,8 @@
 .income-flow .if-rule-name small, .income-flow .if-rule-name b { transition: opacity .28s ease-out; }
 
 /* 3 - result */
-.income-flow .if-result { padding: 1.25em; display: flex; flex-direction: column; gap: .55em; background: rgb(255 255 255 / .13); color: #fff; box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, box-shadow .28s ease-out; }
-.income-flow .if-result.is-on { background: linear-gradient(160deg, #143A66 0%, #0A2540 100%); box-shadow: 0 1.6em 3.4em -1.6em rgb(10 37 64 / .8), inset 0 0 0 1px rgb(255 255 255 / .14); }
+.income-flow .if-result { padding: 1.25em; display: flex; flex-direction: column; gap: .55em; background: rgb(255 255 255 / .13); color: #fff; box-shadow: none; transition: background-color .28s ease-out, box-shadow .28s ease-out; }
+.income-flow .if-result.is-on { background: linear-gradient(160deg, #143A66 0%, #0A2540 100%); box-shadow: 0 1.6em 3.4em -1.6em rgb(10 37 64 / .8); }
 .income-flow .if-result > small { font-size: .82em; opacity: .8; }
 .income-flow .if-result:not(.is-on) .if-result-amount { opacity: .4; }
 .income-flow .if-result-amount { transition: opacity .25s ease-out; font-size: 1.85em; line-height: 1.05; font-weight: 600; letter-spacing: -.025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
