@@ -139,6 +139,17 @@
 .income-flow .if-stat-rest { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
 .income-flow .if-cta { position: relative; }
 
+/* Type: the hero heading's treatment all through the board (Geist semibold, tight tracking, sentence case), so it
+   reads as part of the page rather than a separate widget: labels and names at -0.025em, figures at the heading's
+   own -0.045em, the small print a touch tighter than normal; no more spaced-out capitals. */
+.income-flow .if-board, .income-flow .if-stat { letter-spacing: -0.02em; }
+.income-flow .if-step, .income-flow .if-income-status, .income-flow .if-rule-name b, .income-flow .if-result > small,
+.income-flow .if-split-label, .income-flow .if-done, .income-flow .if-stat-text { font-weight: 600; letter-spacing: -0.025em; }
+.income-flow .if-split-label { text-transform: none; font-size: .82em; opacity: .85; }
+.income-flow .if-income strong, .income-flow .if-result-amount, .income-flow .if-rule-amount b, .income-flow .if-stat-value { font-weight: 600; letter-spacing: -0.045em; }
+.income-flow .if-income strong span, .income-flow .if-result-amount span, .income-flow .if-rule-amount small,
+.income-flow .if-rule-amount em, .income-flow .if-rule-name small, .income-flow .if-income > small, .income-flow .if-legend { letter-spacing: -0.01em; }
+
 /* Tablet and phone keep the wide picture, like a screenshot of it: the board is sized in em, so one font size
    scales the three columns, the connectors' ends and the coins down to the screen's width together. */
 @media (max-width: 1023px) {
