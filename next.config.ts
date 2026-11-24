@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
   devIndicators: false,
+  // dev only: lets a phone on the same Wi-Fi/hotspot open http://<mac-ip>:3500 with scripts working
+  allowedDevOrigins: ["192.168.*.*", "172.*.*.*", "10.*.*.*", "*.local"],
   turbopack: {
     rules: {
       "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },
