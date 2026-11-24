@@ -1,168 +1,148 @@
-/* Ported from the Morefin site (src/sections/income-flow.css), kept as close to the original as the page allows.
-   Income workflow: one income fans out to four percentage rules and settles
-   into what remains. Scroll drives the story; a swipe changes the income.
-   Changes for this page: the section does not start a screen early over the hero (there are no closing lines to
-   fade behind), so it has no negative margin and its track is 100vh shorter; the stage uses the small viewport
-   height so a phone's toolbar never covers it; the heading no longer waits alone in the middle of the screen (the
-   workflow rises while the section scrolls in), which takes out half a screen of empty page and shortens the track; phones keep the wide three-column board, shrunk to fit (see the
-   last media block), instead of the site's one-panel-at-a-time strip; colours follow this page's palette (its background, white cards, royal-blue primary, success green) and the heading
-   is this page's own, with words lighting up as you scroll like every other heading here. */
-.income-flow { position: relative; background: var(--bg); color: var(--fg); --ink: var(--fg); --if-line: var(--line); --if-shadow: rgb(23 37 84 / .16); }
-
-/* Heading: the other sections' scale and centring. It lives inside the pinned
-   stage: first in the middle, then docked at the top above the workflow. */
-.income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; will-change: transform, opacity; }
-.income-flow .if-head h2 { margin: 0; max-width: min(1000px, 92vw); text-wrap: balance; }
-.income-flow .if-head p { margin: 0; max-width: min(760px, 92vw); color: var(--muted); }
-.income-flow .if-body { position: relative; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 2.4vh, 30px); will-change: transform, opacity; }
-.income-flow[data-reduced="true"] .if-head, .income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
+/* Income workflow: one income is split by four percentage rules and settles into what remains.
+   Story and structure come from the Morefin site (src/sections/income-flow.css); the look is this page's own:
+   the hero card's ledger (hairline rules, mono tabular figures, small radii, no glows), the theme's tokens so it
+   works light and dark, one blue for the money that stays and greys for the money that leaves, and schematic
+   right-angle wiring that runs blue while money moves and settles to a hairline once it has arrived.
+   Scroll drives the story (the track is 280vh: the board rises in with the heading, then the workflow plays pinned);
+   the tabs or a swipe pick another income. Phones keep the same three-column board, shrunk to the screen's width. */
+.income-flow {
+  position: relative;
+  background: var(--bg);
+  color: var(--fg);
+  --rule: color-mix(in srgb, var(--fg) 13%, transparent);
+  --wire: color-mix(in srgb, var(--fg) 26%, transparent);
+  --mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
 
 .income-flow .if-track { height: 280vh; }
 .income-flow[data-reduced="true"] .if-track { height: auto; }
-.income-flow .if-stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: clamp(24px, 4.5vh, 56px); padding: clamp(84px, 10vh, 112px) clamp(20px, 3.2vw, 64px) clamp(40px, 6vh, 80px); box-sizing: border-box; overflow: hidden; }
+.income-flow .if-stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; align-items: center; gap: clamp(24px, 4.5vh, 56px); padding: clamp(84px, 10vh, 112px) clamp(20px, 3.2vw, 64px) clamp(40px, 6vh, 80px); box-sizing: border-box; overflow: hidden; }
 .income-flow[data-reduced="true"] .if-stage { position: relative; height: auto; }
-.income-flow .if-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(52% 50% at 50% 55%, rgb(31 79 234 / .09), transparent 72%); pointer-events: none; }
 
-/* Everything on the board is sized in em, so it shrinks on short screens. */
-.income-flow .if-board { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.22fr) minmax(0, 1fr); align-items: center; column-gap: clamp(30px, 5.2vw, 96px); font-size: clamp(11.5px, min(1.12vw, 1.72vh), 17px); margin-top: 2.2em; width: min(1080px, 100%); }
+/* Heading: set like every other heading on the page, left-aligned on the board's edge. */
+.income-flow .if-head { width: min(1080px, 100%); display: flex; flex-direction: column; align-items: flex-start; gap: clamp(8px, 1.2vw, 16px); }
+.income-flow .if-head h2 { margin: 0; max-width: 15em; text-wrap: balance; }
+.income-flow .if-head p { margin: 0; max-width: 34em; color: var(--muted); }
+.income-flow .if-body { position: relative; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(20px, 3.6vh, 44px); will-change: transform, opacity; }
+.income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
+
+/* The board is sized in em, so one font size scales the three columns, the wiring and the type together. */
+.income-flow .if-board { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.32fr) minmax(0, 1fr); align-items: center; column-gap: clamp(30px, 5vw, 84px); font-size: clamp(12px, min(1.12vw, 1.72vh), 16.5px); margin-top: 2em; width: min(1080px, 100%); }
 .income-flow .if-column { position: relative; min-width: 0; }
-.income-flow .if-step { position: absolute; bottom: calc(100% + 1em); left: .15em; display: inline-flex; align-items: center; gap: .6em; font-size: .88em; font-weight: 600; letter-spacing: .02em; color: var(--fg); white-space: nowrap; }
-.income-flow .if-step i { display: grid; place-items: center; width: 1.85em; height: 1.85em; border-radius: 50%; background: color-mix(in srgb, var(--primary) 10%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent); color: var(--primary); font-style: normal; font-size: .92em; }
+.income-flow .if-step { position: absolute; bottom: calc(100% + .85em); left: 0; display: inline-flex; align-items: baseline; gap: .8em; font-family: var(--mono); font-size: .74em; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.income-flow .if-step i { font-style: normal; color: var(--primary); }
 
+/* Wiring: blue while the money travels, a hairline once it has arrived; the dot is the money itself. */
 .income-flow .if-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-/* Each connector is its rule's colour, lightened so it reads on the blue. */
-.income-flow .if-wires path { fill: none; stroke: color-mix(in srgb, var(--tone, var(--primary)) 60%, var(--bg)); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p, 0)); }
-.income-flow .if-wires circle { fill: var(--primary); opacity: 0; filter: drop-shadow(0 0 6px rgb(31 79 234 / .55)); }
+.income-flow .if-wires path { fill: none; stroke: var(--primary); stroke-width: 1.5; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--p, 0)); transition: stroke .6s ease-out; }
+.income-flow .if-wires path.is-live { stroke: var(--wire); }
+.income-flow .if-wires circle { fill: var(--primary); opacity: 0; }
 .income-flow .if-wires circle.is-on { opacity: 1; }
 
-.income-flow .if-node { position: relative; box-sizing: border-box; border-radius: 1.5em; background: var(--card); color: var(--ink); box-shadow: 0 1.4em 3em -1.6em var(--if-shadow), 0 0 0 1px var(--line); }
+.income-flow .if-node { position: relative; box-sizing: border-box; background: var(--card); color: var(--fg); border: 1px solid var(--rule); border-radius: .5em; }
 
-/* 1 - income: a status line, one large figure, one line of context. */
-.income-flow .if-income-node { padding: 1.35em 1.4em 1.05em; }
-.income-flow .if-income-top { display: flex; align-items: center; justify-content: space-between; gap: .8em; }
-.income-flow .if-income-status { display: inline-flex; align-items: center; gap: .5em; font-size: .86em; font-weight: 600; color: var(--success); }
-.income-flow .if-income-status i { position: relative; width: .55em; height: .55em; border-radius: 50%; background: var(--success); }
-.income-flow .if-income-status i::after { content: ""; position: absolute; inset: -.3em; border-radius: 50%; background: color-mix(in srgb, var(--success) 22%, transparent); transform: scale(.4); opacity: 0; transition: transform .35s ease-out, opacity .35s ease-out; }
-.income-flow .if-income-node.is-on .if-income-status i::after { transform: none; opacity: 1; }
-.income-flow .if-income-top small { font-size: .8em; color: var(--muted); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .25s ease-out; }
+/* 1 - income: a transaction slip. Status and time in mono, one large figure, its source, and the three sources as tabs. */
+.income-flow .if-income-node { padding: 1.05em 1.2em .85em; }
+.income-flow .if-income-top { display: flex; align-items: baseline; justify-content: space-between; gap: .8em; font-family: var(--mono); font-size: .72em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.income-flow .if-income-status { display: inline-flex; align-items: center; gap: .6em; transition: color .2s ease-out; }
+.income-flow .if-income-status i { width: .55em; height: .55em; background: currentColor; }
+.income-flow .if-income-node.is-on .if-income-status { color: var(--success); }
+.income-flow .if-income-top small { font-size: 1em; font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .2s ease-out; }
 .income-flow .if-income-node.is-on .if-income-top small { opacity: 1; }
-/* Before the income lands the card waits at zero, in grey. */
-.income-flow .if-income-node:not(.is-on) .if-income-status { color: var(--muted); }
-.income-flow .if-income-node:not(.is-on) .if-income-status i { background: color-mix(in srgb, var(--muted) 45%, transparent); }
 .income-flow .if-income-node .if-when-on, .income-flow .if-income-node.is-on .if-when-off { display: none; }
 .income-flow .if-income-node.is-on .if-when-on { display: inline; }
-.income-flow .if-income > small { opacity: 0; transition: opacity .25s ease-out; }
-.income-flow .if-income-node.is-on .if-income > small { opacity: 1; }
-.income-flow .if-income-node.is-on { animation: if-land .45s ease-out; }
-@keyframes if-land { 0% { transform: scale(1); } 35% { transform: scale(1.025); } 100% { transform: scale(1); } }
-/* Coins fall from above the card into it; each is driven by the scroll. */
-.income-flow .if-coins { position: absolute; left: 0; right: 0; bottom: 50%; height: 16em; pointer-events: none; z-index: 2; }
-.income-flow .if-coins i { position: absolute; left: var(--x); bottom: 0; width: 2.3em; height: 2.3em; margin-left: -1.15em; border-radius: 50%; opacity: 0; background: radial-gradient(circle at 34% 30%, #fff 0%, #DFE7FF 38%, #A9BEFF 72%, #6F8FFF 100%); box-shadow: inset 0 0 0 .12em rgb(255 255 255 / .85), inset 0 0 0 .3em rgb(31 79 234 / .25), 0 .5em 1em -.4em var(--if-shadow); transform: translate3d(0, calc((1 - var(--fall, 0)) * -15em), 0) rotate(calc(var(--spin) * (1 - var(--fall, 0)))) scale(calc(.7 + .3 * var(--fall, 0))); }
-.income-flow .if-coins i::after { content: "M"; position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: .72em; font-weight: 700; color: #1f4fea; }
-.income-flow .if-incomes { display: flex; margin-top: 1.1em; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x pan-y; outline: none; border-radius: .6em; }
+.income-flow .if-incomes { display: flex; margin-top: .85em; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; outline: none; }
 .income-flow .if-incomes::-webkit-scrollbar { display: none; }
-.income-flow .if-incomes:focus-visible { box-shadow: 0 0 0 2px var(--primary); }
-.income-flow .if-income { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: flex; flex-direction: column; gap: .5em; }
-.income-flow .if-income strong { display: flex; align-items: baseline; font-size: 2.1em; line-height: 1; font-weight: 600; letter-spacing: -.035em; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.income-flow .if-income strong sup { margin-right: .1em; font-size: .8em; font-weight: 500; line-height: 1; color: var(--success); vertical-align: baseline; }
-.income-flow .if-income strong span { margin-left: .4em; font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--muted); }
-.income-flow .if-income > small { font-size: .84em; color: var(--muted); }
-.income-flow .if-swipe { display: flex; align-items: center; justify-content: space-between; margin-top: 1.1em; padding-top: .75em; border-top: 1px solid var(--line); }
-.income-flow .if-swipe button { display: grid; place-items: center; width: 1.9em; height: 1.9em; margin: 0 -.45em; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out; }
-.income-flow .if-swipe button:hover { background: color-mix(in srgb, var(--primary) 9%, transparent); color: var(--primary); }
-.income-flow .if-swipe button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-.income-flow .if-swipe svg { width: 1.05em; height: 1.05em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.income-flow .if-dots { display: flex; gap: .38em; }
-.income-flow .if-dots i { width: .4em; height: .4em; border-radius: 50%; background: color-mix(in srgb, var(--muted) 35%, transparent); transition: background-color .15s ease-out, width .15s ease-out; }
-.income-flow .if-dots i[data-on="true"] { width: 1.2em; border-radius: .2em; background: var(--primary); }
+.income-flow .if-incomes:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.income-flow .if-income { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: flex; flex-direction: column; gap: .4em; }
+.income-flow .if-income strong { display: flex; align-items: baseline; font-family: var(--mono); font-size: 1.85em; line-height: 1; font-weight: 500; letter-spacing: -.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.income-flow .if-income strong sup { top: 0; margin-right: .08em; font-size: .7em; vertical-align: baseline; color: var(--success); }
+.income-flow .if-income strong span { margin-left: .45em; font-family: var(--font-sans), system-ui, sans-serif; font-size: .4em; font-weight: 400; letter-spacing: 0; color: var(--muted); }
+.income-flow .if-income > small { font-size: .82em; color: var(--muted); opacity: 0; transition: opacity .2s ease-out; }
+.income-flow .if-income-node.is-on .if-income > small { opacity: 1; }
+.income-flow .if-tabs { display: flex; gap: 1.3em; margin-top: .95em; padding-top: .7em; border-top: 1px solid var(--rule); }
+.income-flow .if-tabs button { position: relative; padding: .15em 0; border: 0; background: none; font: inherit; font-family: var(--mono); font-size: .72em; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: color .15s ease-out; }
+.income-flow .if-tabs button:hover, .income-flow .if-tabs button[aria-pressed="true"] { color: var(--fg); }
+.income-flow .if-tabs button[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.25em; height: 2px; background: var(--primary); }
+.income-flow .if-tabs button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
 
-/* 2 - rules: a light icon, the name, and on the right the amount over the
-   percentage that produced it. A hairline fills as the amount is counted. */
-.income-flow .if-rules { display: flex; flex-direction: column; gap: .8em; }
-.income-flow .if-rule { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .9em; padding: .95em 1.2em .95em .95em; overflow: hidden; background: color-mix(in srgb, var(--card) 55%, transparent); color: var(--muted); box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, color .28s ease-out, box-shadow .28s ease-out, transform .28s ease-out; }
-.income-flow .if-rule.is-on { background: var(--card); color: var(--ink); box-shadow: 0 1.2em 2.6em -1.5em var(--if-shadow), 0 0 0 1px var(--line); transform: translateX(.2em); }
-.income-flow .if-rule-icon { display: grid; place-items: center; width: 2.35em; height: 2.35em; border-radius: 50%; background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--muted); transition: background-color .28s ease-out, color .28s ease-out; }
-.income-flow .if-rule.is-on .if-rule-icon { background: color-mix(in srgb, var(--tone) 13%, var(--card)); color: var(--tone); }
-.income-flow .if-rule-icon svg { width: 1.2em; height: 1.2em; }
-.income-flow .if-rule-name { display: flex; flex-direction: column; gap: .1em; min-width: 0; line-height: 1.25; }
-.income-flow .if-rule-name b { font-size: 1.02em; font-weight: 600; letter-spacing: -.01em; }
-.income-flow .if-rule-name small { font-size: .8em; opacity: .72; }
-.income-flow .if-rule.is-on .if-rule-name small { color: var(--muted); opacity: 1; }
-.income-flow .if-rule-amount { display: flex; flex-direction: column; align-items: flex-end; gap: .1em; line-height: 1.25; font-variant-numeric: tabular-nums; white-space: nowrap; opacity: .55; transition: opacity .28s ease-out; }
-.income-flow .if-rule-amount b { font-size: 1.1em; font-weight: 600; letter-spacing: -.015em; }
-.income-flow .if-rule-amount small { font-size: .74em; color: inherit; opacity: .6; }
-.income-flow .if-rule-amount em { font-style: normal; font-size: .82em; font-weight: 600; }
-.income-flow .if-rule.is-on .if-rule-amount { opacity: 1; }
-.income-flow .if-rule.is-on .if-rule-amount em { color: color-mix(in srgb, var(--tone) 82%, var(--fg)); }
-/* The whole card is the loading bar: a tinted sweep fills it from the left
-   once the connector arrives; when it is full the card turns solid and its
-   information appears. */
-.income-flow .if-rule-load { position: absolute; inset: 0; width: calc(100% * var(--load, 0)); background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 22%, var(--card)), var(--card)); border-radius: inherit; opacity: 0; pointer-events: none; z-index: 0; }
+/* 2 - rules: one ledger table. The percentages are set before any money arrives, so they show from the start;
+   each row's amount appears once its rule has run (a blue underline fills while it does). */
+.income-flow .if-rules { padding: .2em 0 .35em; }
+.income-flow .if-rules-head, .income-flow .if-rule { display: grid; grid-template-columns: 1.7em minmax(0, 1fr) 3.4em 6.6em; column-gap: .9em; padding: 0 1.15em; }
+.income-flow .if-rules-head { padding-top: .7em; padding-bottom: .55em; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: .68em; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.income-flow .if-rules-head span:nth-child(n + 3) { text-align: right; }
+.income-flow .if-rule { position: relative; align-items: baseline; padding-top: .8em; padding-bottom: .8em; color: var(--muted); transition: color .25s ease-out; }
+.income-flow .if-rule + .if-rule { border-top: 1px solid var(--rule); }
+.income-flow .if-rule-index { font-family: var(--mono); font-size: .72em; font-variant-numeric: tabular-nums; transition: color .25s ease-out; }
+.income-flow .if-rule-name { display: flex; flex-direction: column; gap: .15em; min-width: 0; line-height: 1.25; }
+.income-flow .if-rule-name b { font-weight: 500; }
+.income-flow .if-rule-name small { font-size: .78em; color: var(--muted); opacity: 0; transition: opacity .25s ease-out; }
+.income-flow .if-rule-percent { font-style: normal; font-family: var(--mono); font-size: .86em; text-align: right; font-variant-numeric: tabular-nums; }
+.income-flow .if-rule-amount { font-family: var(--mono); font-size: .94em; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; opacity: 0; transition: opacity .25s ease-out; }
+.income-flow .if-rule-amount b { font-weight: 500; }
+.income-flow .if-rule.is-on { color: var(--fg); }
+.income-flow .if-rule.is-on .if-rule-index { color: var(--primary); }
+.income-flow .if-rule.is-on .if-rule-name small, .income-flow .if-rule.is-on .if-rule-amount { opacity: 1; }
+.income-flow .if-rule-load { position: absolute; left: 1.15em; right: 1.15em; bottom: -1px; height: 2px; background: var(--primary); transform-origin: left center; transform: scaleX(var(--load, 0)); opacity: 0; }
 .income-flow .if-rule.is-loading .if-rule-load { opacity: 1; }
-.income-flow .if-rule.is-loading { color: var(--ink); }
-.income-flow .if-rule.is-loading .if-rule-icon { background: color-mix(in srgb, var(--tone) 13%, var(--card)); color: var(--tone); }
-.income-flow .if-rule > :not(.if-rule-load) { position: relative; z-index: 1; }
-.income-flow .if-rule:not(.is-on) .if-rule-amount { opacity: 0; }
-.income-flow .if-rule:not(.is-on) .if-rule-name small { opacity: 0; }
-.income-flow .if-rule:not(.is-on) .if-rule-name b { opacity: .8; }
-.income-flow .if-rule-name small, .income-flow .if-rule-name b { transition: opacity .28s ease-out; }
 
-/* 3 - result: waits as a faint outline, settles into the page's dark navy (its dark buttons' colour) */
-.income-flow .if-result { padding: 1.25em; display: flex; flex-direction: column; gap: .55em; background: color-mix(in srgb, var(--card) 55%, transparent); color: var(--muted); box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, box-shadow .28s ease-out; }
-.income-flow .if-result.is-on { background: linear-gradient(160deg, #1B2A4E 0%, #0F172A 100%); color: #fff; box-shadow: 0 1.6em 3.4em -1.6em rgb(15 23 42 / .55), inset 0 0 0 1px rgb(255 255 255 / .1); }
-.income-flow .if-result > small { font-size: .82em; opacity: .8; }
-.income-flow .if-result:not(.is-on) .if-result-amount { opacity: .4; }
-.income-flow .if-result-amount { transition: opacity .25s ease-out; font-size: 1.85em; line-height: 1.05; font-weight: 600; letter-spacing: -.025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.income-flow .if-result-amount span { font-size: .46em; font-weight: 500; letter-spacing: 0; opacity: .7; }
-.income-flow .if-split-label { margin-top: .5em; font-size: .74em; letter-spacing: .04em; text-transform: uppercase; opacity: .7; }
-.income-flow .if-split { display: flex; gap: 2px; height: .6em; border-radius: .3em; overflow: hidden; background: color-mix(in srgb, currentColor 12%, transparent); }
+/* 3 - result: an empty dashed slot until the rules have run, then the section's one solid block,
+   in the page's ink (its dark buttons' colour; light in the dark theme). */
+.income-flow .if-result { padding: 1.15em 1.25em 1.05em; display: flex; flex-direction: column; gap: .45em; color: var(--muted); border-style: dashed; transition: background-color .3s ease-out, color .3s ease-out, border-color .3s ease-out; }
+.income-flow .if-result.is-on { background: var(--fg); color: var(--bg); border-color: var(--fg); border-style: solid; }
+.income-flow .if-result > small { font-family: var(--mono); font-size: .72em; letter-spacing: .06em; text-transform: uppercase; opacity: .75; }
+.income-flow .if-result-amount { display: flex; align-items: baseline; font-family: var(--mono); font-size: 1.85em; line-height: 1.05; font-weight: 500; letter-spacing: -.04em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.income-flow .if-result-amount span { margin-left: .45em; font-family: var(--font-sans), system-ui, sans-serif; font-size: .4em; font-weight: 400; letter-spacing: 0; opacity: .7; }
+.income-flow .if-split-label { margin-top: .55em; font-family: var(--mono); font-size: .66em; letter-spacing: .08em; text-transform: uppercase; opacity: .65; }
+.income-flow .if-split { display: flex; gap: 2px; height: .45em; background: color-mix(in srgb, currentColor 12%, transparent); }
 .income-flow .if-split i { flex: 0 0 0; min-width: 0; }
-.income-flow .if-split .if-split-rest { flex-shrink: 0; flex-basis: 0; background: color-mix(in srgb, currentColor 30%, transparent); }
-.income-flow .if-result.is-on .if-split-rest { background: rgb(255 255 255 / .9); }
-.income-flow .if-legend { display: flex; flex-wrap: wrap; gap: .3em .8em; margin: 0; padding: 0; list-style: none; font-size: .76em; opacity: .85; }
-.income-flow .if-legend li { display: inline-flex; align-items: center; gap: .4em; }
-.income-flow .if-legend i { width: .6em; height: .6em; border-radius: 50%; }
-.income-flow .if-done { display: inline-flex; align-items: center; gap: .4em; margin-top: .3em; font-size: .84em; font-weight: 600; color: #34D399; opacity: 0; transform: translateY(4px); transition: opacity .2s ease-out, transform .2s ease-out; }
-.income-flow .if-result.is-done .if-done { opacity: 1; transform: none; }
-.income-flow .if-done svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.income-flow .if-split-rest { background: var(--primary); }
+.income-flow [data-shade="0"] { background: color-mix(in srgb, currentColor 72%, transparent); }
+.income-flow [data-shade="1"] { background: color-mix(in srgb, currentColor 52%, transparent); }
+.income-flow [data-shade="2"] { background: color-mix(in srgb, currentColor 36%, transparent); }
+.income-flow [data-shade="3"] { background: color-mix(in srgb, currentColor 24%, transparent); }
+.income-flow .if-result:not(.is-on) .if-split, .income-flow .if-result:not(.is-on) .if-legend { opacity: .4; }
+.income-flow .if-legend { display: grid; grid-template-columns: 1fr 1fr; gap: .3em 1.1em; margin: .25em 0 0; padding: 0; list-style: none; font-size: .72em; }
+.income-flow .if-legend li { display: flex; align-items: center; gap: .5em; min-width: 0; }
+.income-flow .if-legend li em { margin-left: auto; font-style: normal; font-family: var(--mono); font-variant-numeric: tabular-nums; opacity: .8; }
+.income-flow .if-legend i { width: .7em; height: .7em; flex: none; }
+.income-flow .if-done { display: inline-flex; align-items: center; gap: .45em; margin-top: .35em; font-family: var(--mono); font-size: .66em; letter-spacing: .08em; text-transform: uppercase; opacity: 0; transition: opacity .2s ease-out; }
+.income-flow .if-result.is-done .if-done { opacity: .8; }
+.income-flow .if-done svg { width: 1.2em; height: 1.2em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 
-/* The closing statistic: how much of the work runs itself. */
-.income-flow .if-stat { position: relative; display: grid; grid-template-columns: auto auto minmax(120px, 260px) auto; align-items: center; gap: 0 14px; padding: 10px 18px 10px 14px; border-radius: 999px; background: var(--card); box-shadow: 0 1em 2.4em -1.4em var(--if-shadow), inset 0 0 0 1px var(--if-line); opacity: 0; transform: translateY(8px); transition: opacity .25s ease-out, transform .25s ease-out; }
-.income-flow .if-stat.is-on { opacity: 1; transform: none; }
-.income-flow .if-stat-value { min-width: 3.1ch; font-size: clamp(22px, 2vw, 30px); font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--primary); }
-.income-flow .if-stat-text { font-size: clamp(13px, 1.05vw, 16px); color: var(--fg); }
-.income-flow .if-stat-bar { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--fg) 8%, transparent); overflow: hidden; }
-.income-flow .if-stat-bar i { display: block; height: 100%; width: calc(95% * var(--meter, 0)); border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--primary)); }
-.income-flow .if-stat-rest { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
-.income-flow .if-cta { position: relative; }
-
-/* Tablet and phone keep the wide picture, like a screenshot of it: the board is sized in em, so one font size
-   scales the three columns, the connectors' ends and the coins down to the screen's width together. */
-@media (max-width: 1023px) {
-  .income-flow .if-stage { gap: clamp(14px, 2.6vh, 26px); padding: clamp(76px, 10.5vh, 104px) 12px clamp(40px, 6vh, 72px); }
-  .income-flow .if-head { gap: 8px; padding: 0 8px; }
-  .income-flow .if-body { gap: clamp(14px, 2.4vh, 24px); }
-  /* the shrunk board leaves a phone screen half empty, so the stage is only as tall as what it holds and pins in the
-     middle of the screen (--stage-top, set from its height); it follows the hero closely and the next section
-     follows its button straight away */
-  .income-flow .if-stage { height: auto; min-height: 0; top: var(--stage-top, 72px); padding-top: 16px; padding-bottom: 24px; }
-  .income-flow .if-body { flex: none; justify-content: flex-start; }
-  /* 66em is the board's natural width; 24px is the stage's side padding */
-  .income-flow .if-board { width: 100%; font-size: min(17px, calc((100vw - 24px) / 66)); column-gap: 3.4em; }
-  /* thinner lines, so they keep the same weight against the smaller cards */
-  .income-flow .if-wires path { stroke-width: 1.5; }
-  .income-flow .if-wires circle { r: 2.8px; filter: drop-shadow(0 0 3px rgb(31 79 234 / .55)); }
-  .income-flow .if-stat { grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; padding: 10px 16px; border-radius: 18px; width: min(440px, 100%); box-sizing: border-box; }
-  .income-flow .if-stat-value { font-size: 26px; }
-  .income-flow .if-stat-text { font-size: 14.5px; }
-  .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .income-flow * { transition: none !important; }
-}
+/* Foot: the statistic on the left, set on the same hairline as the ledger, and the one button on the right. */
+.income-flow .if-foot { width: min(1080px, 100%); display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: clamp(14px, 2.2vh, 22px); border-top: 1px solid var(--rule); }
+.income-flow .if-stat { display: grid; grid-template-columns: auto auto minmax(80px, 200px) auto; align-items: center; gap: 0 14px; opacity: 0; transition: opacity .25s ease-out; }
+.income-flow .if-stat.is-on { opacity: 1; }
+.income-flow .if-stat-value { min-width: 3.2ch; font-family: var(--mono); font-size: clamp(22px, 2vw, 28px); font-weight: 500; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.income-flow .if-stat-text { font-size: clamp(13px, 1.05vw, 15px); color: var(--muted); }
+.income-flow .if-stat-bar { height: 2px; background: var(--rule); }
+.income-flow .if-stat-bar i { display: block; height: 100%; width: calc(95% * var(--meter, 0)); background: var(--fg); }
+.income-flow .if-stat-rest { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
 
 /* The page's primary start button. */
-.income-flow .if-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .875rem 1.75rem; border-radius: 999px; background: var(--primary); color: #fff; font-weight: 500; white-space: nowrap; box-shadow: 0 10px 15px -3px rgb(31 79 234 / .3), 0 4px 6px -4px rgb(31 79 234 / .3); transition: box-shadow .2s ease-out; }
+.income-flow .if-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem 1.6rem; border-radius: 999px; background: var(--primary); color: #fff; font-weight: 500; white-space: nowrap; box-shadow: 0 10px 15px -3px rgb(31 79 234 / .3), 0 4px 6px -4px rgb(31 79 234 / .3); transition: box-shadow .2s ease-out; }
 .income-flow .if-button:hover { box-shadow: 0 10px 15px -3px rgb(31 79 234 / .5), 0 4px 6px -4px rgb(31 79 234 / .5); }
 .income-flow .if-button svg { width: 1rem; height: 1rem; transition: transform .2s ease-out; }
 .income-flow .if-button:hover svg { transform: translateX(2px); }
+
+/* Tablet and phone keep the wide board, like a picture of it: one font size, set from the screen's width
+   (70em is the board's natural width, 24px the stage's side padding), shrinks it all together. The shrunk board
+   leaves room, so the stage is only as tall as what it holds and pins mid-screen (--stage-top, set from its height). */
+@media (max-width: 1023px) {
+  .income-flow .if-stage { height: auto; min-height: 0; top: var(--stage-top, 72px); gap: 16px; padding: 16px 12px 24px; }
+  .income-flow .if-head { padding: 0 8px; }
+  .income-flow .if-body { flex: none; justify-content: flex-start; gap: 18px; }
+  .income-flow .if-board { width: 100%; font-size: min(17px, calc((100vw - 24px) / 70)); column-gap: 3.2em; }
+  .income-flow .if-wires path { stroke-width: 1; }
+  .income-flow .if-wires circle { r: 2px; }
+  .income-flow .if-foot { flex-direction: column; align-items: stretch; gap: 14px; padding: 14px 8px 0; }
+  .income-flow .if-stat { grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; }
+  .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
+  .income-flow .if-button { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .income-flow * { transition: none !important; }
+}
