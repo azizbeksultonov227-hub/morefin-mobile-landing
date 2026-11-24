@@ -107,9 +107,11 @@
 .income-flow .if-rule:not(.is-on) .if-rule-name b { opacity: .8; }
 .income-flow .if-rule-name small, .income-flow .if-rule-name b { transition: opacity .28s ease-out; }
 
-/* 3 - result: waits as a faint outline, settles into the page's dark navy (its dark buttons' colour) */
+/* 3 - result: waits as a faint outline, settles into the page's primary blue (the start button's colour) */
 .income-flow .if-result { padding: 1.25em; display: flex; flex-direction: column; gap: .55em; background: color-mix(in srgb, var(--card) 55%, transparent); color: var(--muted); box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, box-shadow .28s ease-out; }
-.income-flow .if-result.is-on { background: linear-gradient(160deg, #1B2A4E 0%, #0F172A 100%); color: #fff; box-shadow: 0 1.6em 3.4em -1.6em rgb(15 23 42 / .55), inset 0 0 0 1px rgb(255 255 255 / .1); }
+.income-flow .if-result.is-on { background: var(--primary); color: #fff; box-shadow: 0 1.6em 3.4em -1.6em rgb(31 79 234 / .6), inset 0 0 0 1px rgb(255 255 255 / .14); }
+/* on the blue card the bar sits on a white strip, so the blue "Ulush" slice still shows; what stays is a pale blue */
+.income-flow .if-result.is-on .if-split { height: .8em; padding: .15em; box-sizing: border-box; background: #fff; }
 .income-flow .if-result > small { font-size: .82em; opacity: .8; }
 .income-flow .if-result:not(.is-on) .if-result-amount { opacity: .4; }
 .income-flow .if-result-amount { transition: opacity .25s ease-out; font-size: 1.85em; line-height: 1.05; font-weight: 600; letter-spacing: -.025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -118,11 +120,12 @@
 .income-flow .if-split { display: flex; gap: 2px; height: .6em; border-radius: .3em; overflow: hidden; background: color-mix(in srgb, currentColor 12%, transparent); }
 .income-flow .if-split i { flex: 0 0 0; min-width: 0; }
 .income-flow .if-split .if-split-rest { flex-shrink: 0; flex-basis: 0; background: color-mix(in srgb, currentColor 30%, transparent); }
-.income-flow .if-result.is-on .if-split-rest { background: rgb(255 255 255 / .9); }
+.income-flow .if-result.is-on .if-split-rest { background: color-mix(in srgb, var(--primary) 22%, #fff); }
 .income-flow .if-legend { display: flex; flex-wrap: wrap; gap: .3em .8em; margin: 0; padding: 0; list-style: none; font-size: .76em; opacity: .85; }
 .income-flow .if-legend li { display: inline-flex; align-items: center; gap: .4em; }
 .income-flow .if-legend i { width: .6em; height: .6em; border-radius: 50%; }
-.income-flow .if-done { display: inline-flex; align-items: center; gap: .4em; margin-top: .3em; font-size: .84em; font-weight: 600; color: #34D399; opacity: 0; transform: translateY(4px); transition: opacity .2s ease-out, transform .2s ease-out; }
+.income-flow .if-result.is-on .if-legend i { box-shadow: 0 0 0 .15em #fff; }
+.income-flow .if-done { display: inline-flex; align-items: center; gap: .4em; margin-top: .3em; font-size: .84em; font-weight: 600; color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .2s ease-out, transform .2s ease-out; }
 .income-flow .if-result.is-done .if-done { opacity: 1; transform: none; }
 .income-flow .if-done svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 
