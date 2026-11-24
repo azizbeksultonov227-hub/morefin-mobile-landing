@@ -56,3 +56,22 @@ body { -webkit-tap-highlight-color: rgb(31 79 234 / 0.12); font-family: var(--fo
 @media (prefers-reduced-motion: reduce) {
   .word > span, .appear { animation: none; }
 }
+
+/* A mockup that keeps its desktop look on a phone, shrunk like a picture (the way a product shot is).
+   Inside it Tailwind's spacing, type, radius and container scales are measured from --pf, its own "16px",
+   which each use sets from the screen width; on wider screens it is the page's ordinary scale. */
+@media (max-width: 767px) {
+  .picture {
+    font-size: var(--pf);
+    --spacing: calc(var(--pf) * 0.25);
+    --text-xs: calc(var(--pf) * 0.75);
+    --text-sm: calc(var(--pf) * 0.875);
+    --text-base: var(--pf);
+    --text-lg: calc(var(--pf) * 1.125);
+    --radius-md: calc(var(--pf) * 0.375);
+    --radius-lg: calc(var(--pf) * 0.5);
+    --radius-xl: calc(var(--pf) * 0.75);
+    --radius-2xl: var(--pf);
+    --container-md: calc(var(--pf) * 28);
+  }
+}

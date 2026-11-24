@@ -18,11 +18,11 @@ export function Header({ locale, signIn }: { locale: Locale; signIn: string }) {
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${scrolled ? "border-b border-line bg-bg/70 backdrop-blur-xl" : "border-b border-transparent"}`}>
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-10">
-        <a href={path(locale)} className="shrink-0"><Wordmark priority height={36} className="h-8 md:h-9" /></a>
-        <nav className="flex items-center gap-2">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 min-[360px]:px-5 md:px-10">
+        <a href={path(locale)} className="shrink-0"><Wordmark priority height={36} className="h-7 min-[360px]:h-8 md:h-9" /></a>
+        <nav className="flex items-center gap-1.5 min-[360px]:gap-2">
           <Langs locale={locale} />
-          <a href={APP_URL} className="flex h-9 items-center rounded-full bg-fg px-4 text-sm font-medium text-bg transition hover:opacity-85">{signIn}</a>
+          <a href={APP_URL} className="flex h-9 items-center rounded-full bg-fg px-3 text-sm font-medium text-bg transition hover:opacity-85 min-[360px]:px-4">{signIn}</a>
         </nav>
       </div>
     </header>

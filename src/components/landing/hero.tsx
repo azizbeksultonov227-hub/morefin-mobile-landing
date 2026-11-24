@@ -54,11 +54,13 @@ export function Hero({ t }: { t: Dict }) {
           <span className="text-muted/80"><SplitWords text={t.h1b} delay={300} /></span>
         </h1>
 
-        <div className="mt-8 grid items-end gap-7 md:mt-10 md:grid-cols-[minmax(0,400px)_1fr] md:gap-8">
-          <div className="appear rounded-2xl border border-line bg-card/90 p-4 font-mono text-[13px] shadow-xl shadow-blue-950/5 md:p-5 md:text-sm" style={{ "--d": "700ms" } as React.CSSProperties}>
+        {/* phones keep the desktop pairing: the card on the left, shrunk like a picture (400px wide = 25 of its "16px"),
+            the words and the button on the right at their normal reading size */}
+        <div className="mt-8 grid grid-cols-[1.08fr_1fr] items-end gap-4 md:mt-10 md:grid-cols-[minmax(0,400px)_1fr] md:gap-8">
+          <div className="picture appear rounded-2xl border border-line bg-card/90 p-5 font-mono text-sm shadow-xl shadow-blue-950/5" style={{ "--d": "700ms", "--pf": "calc((100vw - 56px) * 0.519 / 25)" } as React.CSSProperties}>
             <p className="mb-2.5 text-xs text-muted">{t.card}</p>
             {rows.map(([k, v, sign], i) => (
-              <div key={i} className="flex h-8 items-center justify-between gap-3 border-t border-line md:h-9">
+              <div key={i} className="flex h-9 items-center justify-between gap-3 border-t border-line">
                 <span className="truncate text-muted">{k}</span>
                 <Value show={ready} id={count} delay={i * 0.12} className={i === 0 ? "text-success" : undefined}>
                   {sign}{money(v)}
@@ -75,9 +77,9 @@ export function Hero({ t }: { t: Dict }) {
           </div>
 
           <div className="appear md:justify-self-end md:text-right" style={{ "--d": "950ms" } as React.CSSProperties}>
-            <p className="max-w-sm text-base text-muted md:ml-auto md:text-lg">{t.lead}</p>
-            <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-fg px-6 py-3.5 font-medium text-bg transition hover:bg-primary hover:text-white sm:w-auto md:py-3">
-              {t.start} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+            <p className="max-w-sm text-sm text-muted md:ml-auto md:text-lg">{t.lead}</p>
+            <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-fg px-3 py-3 text-center text-[13px] font-medium leading-tight text-bg transition hover:bg-primary hover:text-white md:mt-5 md:inline-flex md:w-auto md:px-6 md:text-base">
+              {t.start} <ArrowRight className="hidden size-4 shrink-0 transition group-hover:translate-x-0.5 min-[400px]:block" />
             </a>
           </div>
         </div>
