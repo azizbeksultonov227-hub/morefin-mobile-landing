@@ -3,7 +3,8 @@
    into what remains. Scroll drives the story; a swipe changes the income.
    Changes for this page: the section does not start a screen early over the hero (there are no closing lines to
    fade behind), so it has no negative margin and its track is 100vh shorter; the stage uses the small viewport
-   height so a phone's toolbar never covers it; --line is renamed so the page's own --line token stays intact. */
+   height so a phone's toolbar never covers it; phones keep the wide three-column board, shrunk to fit (see the
+   last media block), instead of the site's one-panel-at-a-time strip; --line is renamed so the page's own --line token stays intact. */
 .income-flow { position: relative; background: linear-gradient(180deg, #2C98E6 0%, #2788CF 38%, #1E6AA1 100%); color: #fff; --ink: #0F2A47; --if-line: rgb(255 255 255 / .3); }
 
 /* Heading: the other sections' scale and centring. It lives inside the pinned
@@ -132,55 +133,23 @@
 .income-flow .if-stat-rest { font-size: 12.5px; color: rgb(255 255 255 / .72); white-space: nowrap; }
 .income-flow .if-cta { position: relative; }
 
-.income-flow .if-title-short, .income-flow .if-stepper, .income-flow .if-panel-note { display: none; }
-
-/* Tablet and phone: one stage at a time. The board is a strip of three
-   panels - income, rules, result - that slides with the scroll, so each one
-   can be large and legible; a stepper above shows where the story is. */
+/* Tablet and phone keep the wide picture, like a screenshot of it: the board is sized in em, so one font size
+   scales the three columns, the connectors' ends and the coins down to the screen's width together. */
 @media (max-width: 1023px) {
-  .income-flow .if-title-full { display: none; }
-  .income-flow .if-title-short { display: inline; }
-  .income-flow .if-head { gap: 8px; }
-  .income-flow .if-head h2 { font-size: clamp(27px, min(8.2vw, 4.4vh), 40px); line-height: 1.06; max-width: 15em; }
+  .income-flow .if-stage { justify-content: center; gap: clamp(14px, 2.6vh, 26px); padding: clamp(76px, 10.5vh, 104px) 12px clamp(40px, 6vh, 72px); }
+  .income-flow .if-head { gap: 8px; padding: 0 8px; }
+  .income-flow .if-head h2 { font-size: clamp(26px, min(7.4vw, 4.2vh), 40px); line-height: 1.06; }
   .income-flow .if-head p { font-size: clamp(15px, min(4.3vw, 2.3vh), 19px); }
-  .income-flow .if-stage { gap: clamp(14px, 2.6vh, 26px); padding: clamp(76px, 10.5vh, 104px) 0 clamp(78px, 10vh, 104px); }
-  .income-flow .if-head { padding: 0 20px; }
-  .income-flow .if-body { flex: 1; min-height: 0; justify-content: flex-start; gap: clamp(14px, 2.4vh, 24px); overflow: hidden; padding-top: 6px; margin-top: -6px; }
-
-  .income-flow .if-stepper { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); width: min(440px, calc(100% - 40px)); margin: 0; padding: 0; list-style: none; }
-  .income-flow .if-stepper::before { content: ""; position: absolute; top: 13px; left: 16.666%; right: 16.666%; height: 2px; border-radius: 1px; background: linear-gradient(90deg, #fff calc(var(--panel, 0) * 50%), rgb(255 255 255 / .28) calc(var(--panel, 0) * 50%)); }
-  .income-flow .if-stepper li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: rgb(255 255 255 / .62); transition: color .2s ease-out; }
-  .income-flow .if-stepper li i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2F8ADB; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .45); font-style: normal; font-size: 13px; color: rgb(255 255 255 / .8); transition: background-color .2s ease-out, color .2s ease-out, transform .2s ease-out; }
-  .income-flow .if-stepper li.is-on { color: #fff; }
-  .income-flow .if-stepper li.is-on i { background: #fff; color: #1E6AA1; box-shadow: none; }
-  .income-flow .if-stepper li.is-current i { transform: scale(1.12); }
-  .income-flow .if-stepper li span { white-space: nowrap; }
-
-  .income-flow .if-board { display: flex; align-items: center; gap: 0; column-gap: 0; width: 100%; max-width: none; flex: 1; min-height: 0; margin-top: 0; font-size: clamp(14px, min(4.1vw, 2.15vh), 18px); transform: translate3d(calc(var(--panel, 0) * -100%), 0, 0); will-change: transform; }
-  .income-flow .if-column { flex: 0 0 100%; box-sizing: border-box; padding: 0 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .9em; }
-  .income-flow .if-column > * { width: min(440px, 100%); }
-  .income-flow .if-wires, .income-flow .if-step, .income-flow .if-cta { display: none; }
-  .income-flow .if-coins { left: 20px; right: 20px; width: auto; bottom: 50%; height: 13em; }
-  .income-flow .if-coins i { transform: translate3d(0, calc((1 - var(--fall, 0)) * -9em), 0) rotate(calc(var(--spin) * (1 - var(--fall, 0)))) scale(calc(.7 + .3 * var(--fall, 0))); }
-
-  .income-flow .if-income-node { padding: 1.3em 1.35em 1em; }
-  .income-flow .if-income strong { font-size: 2.2em; }
-  .income-flow .if-panel-note { display: block; margin: 0; text-align: center; font-size: .92em; color: rgb(255 255 255 / .86); font-variant-numeric: tabular-nums; }
-  .income-flow .if-panel-note b { font-weight: 600; color: #fff; }
-  .income-flow .if-rules { gap: .7em; }
-  .income-flow .if-rule { padding: .85em 1.1em .85em .85em; border-radius: 1.3em; }
-  .income-flow .if-rule.is-on { transform: none; }
-  .income-flow .if-result { padding: 1.3em 1.35em; gap: .6em; }
-  .income-flow .if-result-amount { font-size: 2.2em; }
-
-  .income-flow .if-stat { grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; padding: 10px 16px; border-radius: 18px; width: min(440px, calc(100% - 40px)); box-sizing: border-box; }
+  .income-flow .if-body { gap: clamp(14px, 2.4vh, 24px); }
+  /* 66em is the board's natural width; 24px is the stage's side padding */
+  .income-flow .if-board { width: 100%; font-size: min(17px, calc((100vw - 24px) / 66)); column-gap: 3.4em; }
+  /* thinner lines, so they keep the same weight against the smaller cards */
+  .income-flow .if-wires path { stroke-width: 1.5; filter: drop-shadow(0 0 3px rgb(255 255 255 / .45)); }
+  .income-flow .if-wires circle { r: 2.8px; filter: drop-shadow(0 0 4px rgb(255 255 255 / .95)); }
+  .income-flow .if-stat { grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; padding: 10px 16px; border-radius: 18px; width: min(440px, 100%); box-sizing: border-box; }
   .income-flow .if-stat-value { font-size: 26px; }
   .income-flow .if-stat-text { font-size: 14.5px; }
   .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
-}
-.income-flow .if-cta-below { display: none; }
-@media (max-width: 1023px) {
-  .income-flow .if-cta-below { display: flex; justify-content: center; padding: 8px 20px 56px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .income-flow * { transition: none !important; }
@@ -191,6 +160,3 @@
 .income-flow .if-button:hover { box-shadow: 0 1.2rem 2.4rem -1rem rgb(10 37 64 / .8); }
 .income-flow .if-button svg { width: 1rem; height: 1rem; transition: transform .2s ease-out; }
 .income-flow .if-button:hover svg { transform: translateX(2px); }
-@media (max-width: 1023px) {
-  .income-flow .if-cta-below .if-button { width: min(440px, 100%); }
-}

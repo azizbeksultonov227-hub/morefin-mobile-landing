@@ -35,10 +35,8 @@ const uz = {
 
   flow: {
     title: "Kirim bo‘lishi bilan sof foyda avtomatik hisoblanadi.",
-    titleShort: "Sof foyda avtomatik hisoblanadi.",
     subtitle: "95% qo‘l mehnatidan ozod bo‘lasiz.",
     steps: ["Kirim", "Qoidalar o‘zi ishlaydi", "Natija"],
-    stepsShort: ["Kirim", "Qoidalar", "Natija"],
     incoming: "Kirim tushdi",
     waiting: "Kirim kutilmoqda",
     when: "Bugun, 14:32",
@@ -47,7 +45,6 @@ const uz = {
     swipe: "Boshqa kirimni ko‘rish uchun suring",
     previous: "Oldingi kirim",
     next: "Keyingi kirim",
-    splitting: "taqsimlanmoqda",
     rules: {
       share: { name: "Ulush", detail: "Sherik ulushi" },
       tax: { name: "Soliq", detail: "Aylanma solig‘i" },
@@ -107,10 +104,8 @@ const ru: Dict = {
 
   flow: {
     title: "Как только приходит доход, чистая прибыль считается автоматически.",
-    titleShort: "Чистая прибыль считается автоматически.",
     subtitle: "Вы избавляетесь от 95% ручной работы.",
     steps: ["Доход", "Правила работают сами", "Итог"],
-    stepsShort: ["Доход", "Правила", "Итог"],
     incoming: "Поступил доход",
     waiting: "Ожидаем доход",
     when: "Сегодня, 14:32",
@@ -119,7 +114,6 @@ const ru: Dict = {
     swipe: "Проведите, чтобы выбрать другой доход",
     previous: "Предыдущий доход",
     next: "Следующий доход",
-    splitting: "распределяется",
     rules: {
       share: { name: "Доля", detail: "Доля партнёра" },
       tax: { name: "Налог", detail: "Налог с оборота" },
@@ -177,10 +171,8 @@ const en: Dict = {
 
   flow: {
     title: "The moment income arrives, net profit is calculated automatically.",
-    titleShort: "Net profit is calculated automatically.",
     subtitle: "You are freed from 95% of the manual work.",
     steps: ["Income", "Rules run themselves", "Result"],
-    stepsShort: ["Income", "Rules", "Result"],
     incoming: "Income received",
     waiting: "Waiting for income",
     when: "Today, 14:32",
@@ -189,7 +181,6 @@ const en: Dict = {
     swipe: "Swipe to try another income",
     previous: "Previous income",
     next: "Next income",
-    splitting: "being distributed",
     rules: {
       share: { name: "Share", detail: "Partner’s share" },
       tax: { name: "Tax", detail: "Turnover tax" },

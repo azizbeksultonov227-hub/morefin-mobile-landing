@@ -6,8 +6,9 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import { APP_URL, type Dict, type Locale } from "@/i18n";
 import "./income-flow.css";
 
-// A straight port of the Morefin site's income workflow (src/sections/AppHero.tsx + income-flow.css), same look and
-// same scroll story. The only swap: GSAP's ScrollTrigger is replaced by a plain scroll listener, so no new library.
+// A port of the Morefin site's income workflow (src/sections/AppHero.tsx + income-flow.css), same look and same
+// scroll story. Two changes: GSAP's ScrollTrigger is replaced by a plain scroll listener (no new library), and phones
+// keep the wide three-column board, shrunk to the screen's width, instead of the site's one-panel-at-a-time strip.
 
 // One income and four percentage rules. The percentages are exact on purpose:
 // 5,87% is calculated as 5,87%, never rounded to 6. Each rule has its own
@@ -83,7 +84,6 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     // The workflow itself plays over the rest of the scroll.
     const progress = reduced ? 1 : span(scroll, 0.3, 1);
     const amount = incomeRef.current;
-    const column = root.dataset.layout === "column";
     // Draw a connector up to `value` and ride a pulse on its leading end.
     const wire = (name: string, value: number) => {
       const path = root.querySelector<SVGPathElement>(`[data-wire="${name}"]`);
@@ -110,16 +110,6 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       coin.style.opacity = fall <= 0 || fall >= 1 ? "0" : "1";
     });
 
-    // Phones show one stage at a time: the board is a strip of three panels
-    // that slides as the story moves from income to rules to result.
-    const panel = column ? ease(span(progress, 0.165, 0.215)) + ease(span(progress, 0.7, 0.76)) : 0;
-    root.style.setProperty("--panel", String(panel));
-    root.querySelectorAll<HTMLElement>(".if-stepper li").forEach((step, index) => {
-      step.classList.toggle("is-on", panel >= index - 0.5);
-      step.classList.toggle("is-current", Math.round(panel) === index);
-    });
-    root.querySelector<HTMLElement>(".if-panel-note b")!.textContent = group(amount);
-
     const settle = ease(span(progress, 0.8, 0.9));
     let deducted = 0;
     RULES.forEach((rule, index) => {
@@ -136,7 +126,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       node.style.setProperty("--load", String(load));
       node.querySelector<HTMLElement>(".if-rule-amount b")!.textContent = group(full * count);
       wire(`in-${index}`, line);
-      if (!column) wire(`out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
+      wire(`out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
       root.style.setProperty(`--slice-${index}`, String(rule.percent * settle));
       deducted += full;
     });
@@ -156,24 +146,21 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     paint();
   });
 
-  // The connectors are measured from the cards themselves (only the wide fan-out has them).
+  // The connectors are measured from the cards themselves, so they follow the board at any size.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const board = root.querySelector<HTMLElement>(".if-board")!;
     const measure = () => {
-      const column = innerWidth < 1024;
-      root.dataset.layout = column ? "column" : "fan";
       const frame = board.getBoundingClientRect();
       const box = (selector: string) => {
         const rect = board.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
         return { left: rect.left - frame.left, right: rect.right - frame.left, top: rect.top - frame.top, bottom: rect.bottom - frame.top, cy: rect.top - frame.top + rect.height / 2 };
       };
-      // The phone's panels need no connectors; the stepper shows the path.
-      const list: Wire[] = column
-        ? []
-        : [...RULES.map((rule, index) => ({ role: "in" as const, index, from: ".if-income-node", to: `[data-rule="${rule.key}"]` })),
-          ...RULES.map((rule, index) => ({ role: "out" as const, index, from: `[data-rule="${rule.key}"]`, to: ".if-result" }))];
+      const list: Wire[] = [
+        ...RULES.map((rule, index) => ({ role: "in" as const, index, from: ".if-income-node", to: `[data-rule="${rule.key}"]` })),
+        ...RULES.map((rule, index) => ({ role: "out" as const, index, from: `[data-rule="${rule.key}"]`, to: ".if-result" })),
+      ];
       setWires(list.map((w) => {
         const a = box(w.from), b = box(w.to);
         // Fan lines leave and arrive spread along the card's edge, not from one point.
@@ -240,15 +227,11 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">
-            {/* Phones get a shorter line so it can be large. */}
-            <h2><span className="if-title-full">{f.title}</span><span className="if-title-short">{f.titleShort}</span></h2>
+            <h2>{f.title}</h2>
             <p>{f.subtitle}</p>
           </header>
 
           <div className="if-body">
-            <ol className="if-stepper" aria-hidden="true">
-              {f.stepsShort.map((label, index) => <li key={label}><i>{index + 1}</i><span>{label}</span></li>)}
-            </ol>
             <div className="if-board">
               <svg className="if-wires" aria-hidden="true">
                 {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": RULES[w.index].color } as CSSProperties} />)}
@@ -283,7 +266,6 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
 
               <div className="if-column">
                 <span className="if-step"><i>2</i>{f.steps[1]}</span>
-                <p className="if-panel-note"><b>0</b> {t.currency} {f.splitting}</p>
                 <div className="if-rules">
                   {RULES.map((rule) => (
                     <div className="if-node if-rule" data-rule={rule.key} key={rule.key} style={{ "--tone": rule.color } as CSSProperties}>
@@ -324,8 +306,6 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
           </div>
         </div>
       </div>
-      {/* On phones the button does not fit inside the pinned stage. */}
-      <div className="if-cta-below"><Start label={start} lead="flow" /></div>
     </section>
   );
 }
