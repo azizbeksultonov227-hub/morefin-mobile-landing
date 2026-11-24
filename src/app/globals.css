@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-warning: #f59e0b;
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-display, var(--font-geist));
+}
+
+/* Morefin: airy blue canvas, the logo's royal blue as the primary, sky blue as the accent */
+:root {
+  --bg: #f8fbfd;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --card: #ffffff;
+  --line: rgb(15 23 42 / 9%);
+  --primary: #1f4fea;
+  --primary-fg: #ffffff;
+  --accent: #3b9dfb;
+  --success: #16a36a;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a111c;
+    --fg: #f5f8fc;
+    --muted: #94a3b8;
+    --card: #101a2a;
+    --line: rgb(255 255 255 / 8%);
+    --primary: #4b74ff;
+    --primary-fg: #ffffff;
+    --accent: #7fc0ff;
+    --success: #34d399;
+    color-scheme: dark;
+  }
+}
+
+html { background: var(--bg); color: var(--fg); }
+body { -webkit-tap-highlight-color: rgb(31 79 234 / 0.12); font-family: var(--font-sans), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+/* entrance on first paint, no JS needed: words rise out of blur, blocks fade up */
+@keyframes rise { from { transform: translateY(105%); filter: blur(6px); } }
+@keyframes appear { from { opacity: 0; transform: translateY(14px); } }
+.word { display: inline-block; overflow: hidden; padding-bottom: 0.08em; vertical-align: bottom; }
+.word > span { display: inline-block; animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i) * 60ms + var(--d, 0ms)); }
+.appear { animation: appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
+@media (prefers-reduced-motion: reduce) {
+  .word > span, .appear { animation: none; }
+}
