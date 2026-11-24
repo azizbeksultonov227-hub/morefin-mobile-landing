@@ -147,14 +147,25 @@
      follows its button straight away */
   .income-flow .if-stage { height: auto; min-height: 0; top: var(--stage-top, 72px); padding-top: 16px; padding-bottom: 24px; }
   .income-flow .if-body { flex: none; justify-content: flex-start; }
-  /* 66em is the board's natural width; 24px is the stage's side padding */
-  .income-flow .if-board { width: 100%; font-size: min(17px, calc((100vw - 24px) / 66)); column-gap: 3.4em; }
+  /* 50em is the board's natural width once its big figures are trimmed below; 24px is the stage's side padding.
+     That makes the board about a third larger on a phone (7px at 375px instead of 5.3px) */
+  .income-flow .if-board { width: 100%; font-size: min(15px, calc((100vw - 24px) / 50)); column-gap: 2.4em; }
+  /* at this scale the big figures would outgrow their columns and the smallest labels would be unreadable,
+     so the two are brought closer together */
+  .income-flow .if-income strong { font-size: 1.6em; }
+  .income-flow .if-result-amount { font-size: 1.5em; }
+  .income-flow .if-rule-amount b { font-size: 1em; }
+  .income-flow .if-step { font-size: 1em; }
+  .income-flow .if-legend { font-size: .84em; }
+  /* the fine print (the rules' explanations, the income's time) would wrap into three or four lines and make the
+     cards uneven; at picture size the names say enough */
+  .income-flow .if-rule-name small, .income-flow .if-income-top small { display: none; }
   /* thinner lines, so they keep the same weight against the smaller cards */
   .income-flow .if-wires path { stroke-width: 1.5; }
   .income-flow .if-wires circle { r: 2.8px; filter: drop-shadow(0 0 3px rgb(31 79 234 / .55)); }
-  .income-flow .if-stat { grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; padding: 10px 16px; border-radius: 18px; width: min(440px, 100%); box-sizing: border-box; }
-  .income-flow .if-stat-value { font-size: 26px; }
-  .income-flow .if-stat-text { font-size: 14.5px; }
+  .income-flow .if-stat { grid-template-columns: auto auto; gap: 0 10px; padding: 7px 16px 7px 12px; }
+  .income-flow .if-stat-value { min-width: 0; font-size: 20px; }
+  .income-flow .if-stat-text { font-size: 13.5px; }
   .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {

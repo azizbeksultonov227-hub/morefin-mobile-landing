@@ -235,7 +235,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">
-            <h2 className="text-[clamp(2.1rem,4.6vw,4rem)] font-semibold leading-[1] tracking-[-0.04em]">
+            <h2 className="text-[clamp(1.75rem,4.6vw,4rem)] font-semibold leading-[1.02] tracking-[-0.04em]">
               <span className="sr-only">{f.title}</span>
               <span aria-hidden>{f.title.split(" ").map((word, index) => <span key={index} className="if-word">{word} </span>)}</span>
             </h2>
