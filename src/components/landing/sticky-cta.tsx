@@ -4,11 +4,13 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { APP_URL } from "@/i18n";
 
-// on a phone the start button stays at hand once the hero's own button has scrolled away, until the closing one shows
+// on a phone the start button stays at hand once the hero's own button has scrolled away, until the closing one shows;
+// it also steps aside over a [data-no-sticky] block (a full-screen pinned stage that has its own button)
 export function StickyCta({ label }: { label: string }) {
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const ctas = [...document.querySelectorAll("[data-cta]")];
+    const covers = [...document.querySelectorAll("[data-no-sticky]")];
     const visible = new Set<Element>();
     let passedHero = false;
     const io = new IntersectionObserver((entries) => {
@@ -19,7 +21,7 @@ export function StickyCta({ label }: { label: string }) {
       }
       setShown(passedHero && visible.size === 0);
     });
-    ctas.forEach((c) => io.observe(c));
+    [...ctas, ...covers].forEach((c) => io.observe(c));
     return () => io.disconnect();
   }, []);
 
