@@ -64,16 +64,16 @@
 .income-flow .if-incomes:focus-visible { box-shadow: 0 0 0 2px var(--primary); }
 .income-flow .if-income { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; display: flex; flex-direction: column; gap: .5em; }
 .income-flow .if-income strong { display: flex; align-items: baseline; font-size: 2.1em; line-height: 1; font-weight: 600; letter-spacing: -.035em; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.income-flow .if-income strong sup { margin-right: .1em; font-size: .8em; font-weight: 500; line-height: 1; color: var(--success); vertical-align: baseline; }
-.income-flow .if-income strong span { margin-left: .4em; font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--muted); }
-.income-flow .if-income > small { font-size: .84em; color: var(--muted); }
+.income-flow .if-income strong sup { margin-right: .1em; font-size: .8em; font-weight: 700; line-height: 1; color: var(--success); vertical-align: baseline; }
+.income-flow .if-income strong span { margin-left: .35em; font-size: .5em; font-weight: 600; letter-spacing: 0; color: color-mix(in srgb, var(--fg) 62%, transparent); }
+.income-flow .if-income > small { font-size: .92em; font-weight: 500; color: color-mix(in srgb, var(--fg) 72%, transparent); }
 .income-flow .if-swipe { display: flex; align-items: center; justify-content: space-between; margin-top: 1.1em; padding-top: .75em; border-top: 1px solid var(--line); }
-.income-flow .if-swipe button { display: grid; place-items: center; width: 1.9em; height: 1.9em; margin: 0 -.45em; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out; }
+.income-flow .if-swipe button { display: grid; place-items: center; width: 1.9em; height: 1.9em; margin: 0 -.45em; padding: 0; border: 0; border-radius: 50%; background: transparent; color: color-mix(in srgb, var(--fg) 70%, transparent); cursor: pointer; transition: background-color .15s ease-out, color .15s ease-out; }
 .income-flow .if-swipe button:hover { background: color-mix(in srgb, var(--primary) 9%, transparent); color: var(--primary); }
 .income-flow .if-swipe button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .income-flow .if-swipe svg { width: 1.05em; height: 1.05em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .income-flow .if-dots { display: flex; gap: .38em; }
-.income-flow .if-dots i { width: .4em; height: .4em; border-radius: 50%; background: color-mix(in srgb, var(--muted) 35%, transparent); transition: background-color .15s ease-out, width .15s ease-out; }
+.income-flow .if-dots i { width: .45em; height: .45em; border-radius: 50%; background: color-mix(in srgb, var(--fg) 22%, transparent); transition: background-color .15s ease-out, width .15s ease-out; }
 .income-flow .if-dots i[data-on="true"] { width: 1.2em; border-radius: .2em; background: var(--primary); }
 
 /* 2 - rules: a light icon, the name, and on the right the amount over the
@@ -111,20 +111,22 @@
 .income-flow .if-result { padding: 1.25em; display: flex; flex-direction: column; gap: .55em; background: color-mix(in srgb, var(--card) 55%, transparent); color: var(--muted); box-shadow: inset 0 0 0 1px var(--if-line); transition: background-color .28s ease-out, box-shadow .28s ease-out; }
 .income-flow .if-result.is-on { background: var(--primary); color: #fff; box-shadow: 0 1.6em 3.4em -1.6em rgb(31 79 234 / .6), inset 0 0 0 1px rgb(255 255 255 / .14); }
 /* on the blue card the bar sits on a white strip, so the blue "Ulush" slice still shows; what stays is a pale blue */
-.income-flow .if-result.is-on .if-split { height: .8em; padding: .15em; box-sizing: border-box; background: #fff; }
-.income-flow .if-result > small { font-size: .82em; opacity: .8; }
+.income-flow .if-result > small { font-size: .86em; opacity: .95; }
 .income-flow .if-result:not(.is-on) .if-result-amount { opacity: .4; }
 .income-flow .if-result-amount { transition: opacity .25s ease-out; font-size: 1.85em; line-height: 1.05; font-weight: 600; letter-spacing: -.025em; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.income-flow .if-result-amount span { font-size: .46em; font-weight: 500; letter-spacing: 0; opacity: .7; }
-.income-flow .if-split-label { margin-top: .5em; font-size: .74em; letter-spacing: .04em; text-transform: uppercase; opacity: .7; }
-.income-flow .if-split { display: flex; gap: 2px; height: .6em; border-radius: .3em; overflow: hidden; background: color-mix(in srgb, currentColor 12%, transparent); }
+.income-flow .if-result-amount span { font-size: .5em; font-weight: 600; letter-spacing: 0; opacity: .9; }
+.income-flow .if-breakdown { display: flex; flex-direction: column; gap: .5em; margin-top: .35em; padding: .7em .75em .7em; border-radius: .75em; background: color-mix(in srgb, currentColor 7%, transparent); transition: background-color .28s ease-out, color .28s ease-out; }
+.income-flow .if-result.is-on .if-breakdown { background: #fff; color: #0F172A; }
+.income-flow .if-split-label { font-size: .74em; letter-spacing: .04em; text-transform: uppercase; }
+.income-flow .if-split { display: flex; gap: 2px; height: .55em; border-radius: .3em; overflow: hidden; background: color-mix(in srgb, currentColor 10%, transparent); }
 .income-flow .if-split i { flex: 0 0 0; min-width: 0; }
 .income-flow .if-split .if-split-rest { flex-shrink: 0; flex-basis: 0; background: color-mix(in srgb, currentColor 30%, transparent); }
-.income-flow .if-result.is-on .if-split-rest { background: color-mix(in srgb, var(--primary) 22%, #fff); }
-.income-flow .if-legend { display: flex; flex-wrap: wrap; gap: .3em .8em; margin: 0; padding: 0; list-style: none; font-size: .76em; opacity: .85; }
-.income-flow .if-legend li { display: inline-flex; align-items: center; gap: .4em; }
-.income-flow .if-legend i { width: .6em; height: .6em; border-radius: 50%; }
-.income-flow .if-result.is-on .if-legend i { box-shadow: 0 0 0 .15em #fff; }
+.income-flow .if-result.is-on .if-split-rest { background: color-mix(in srgb, var(--primary) 28%, #fff); }
+.income-flow .if-legend { display: flex; flex-direction: column; gap: .3em; margin: .1em 0 0; padding: 0; list-style: none; font-size: .8em; font-weight: 500; }
+.income-flow .if-legend li { display: flex; align-items: center; gap: .5em; }
+.income-flow .if-legend li em { margin-left: auto; font-style: normal; font-weight: 600; font-variant-numeric: tabular-nums; }
+.income-flow .if-legend li:last-child { margin-top: .15em; padding-top: .35em; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); font-weight: 600; }
+.income-flow .if-legend i { width: .65em; height: .65em; flex: none; border-radius: 50%; }
 .income-flow .if-done { display: inline-flex; align-items: center; gap: .4em; margin-top: .3em; font-size: .84em; font-weight: 600; color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .2s ease-out, transform .2s ease-out; }
 .income-flow .if-result.is-done .if-done { opacity: 1; transform: none; }
 .income-flow .if-done svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
@@ -145,7 +147,7 @@
 .income-flow .if-board, .income-flow .if-stat { letter-spacing: -0.02em; }
 .income-flow .if-step, .income-flow .if-income-status, .income-flow .if-rule-name b, .income-flow .if-result > small,
 .income-flow .if-split-label, .income-flow .if-done, .income-flow .if-stat-text { font-weight: 600; letter-spacing: -0.025em; }
-.income-flow .if-split-label { text-transform: none; font-size: .82em; opacity: .85; }
+.income-flow .if-split-label { text-transform: none; font-size: .84em; }
 .income-flow .if-income strong, .income-flow .if-result-amount, .income-flow .if-rule-amount b, .income-flow .if-stat-value { font-weight: 600; letter-spacing: -0.045em; }
 .income-flow .if-income strong span, .income-flow .if-result-amount span, .income-flow .if-rule-amount small,
 .income-flow .if-rule-amount em, .income-flow .if-rule-name small, .income-flow .if-income > small, .income-flow .if-legend { letter-spacing: -0.01em; }

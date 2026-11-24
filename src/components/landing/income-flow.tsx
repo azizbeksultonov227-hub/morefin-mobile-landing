@@ -294,14 +294,18 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
                 <div className="if-node if-result">
                   <small>{f.net}</small>
                   <strong className="if-result-amount"><b>{group(INCOMES[0])}</b> <span>{t.currency}</span></strong>
-                  <span className="if-split-label">{f.split}</span>
-                  <div className="if-split" aria-hidden="true">
-                    {RULES.map((rule, index) => <i key={rule.key} style={{ background: rule.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
-                    <i className="if-split-rest" style={{ flexGrow: REST }} />
+                  {/* the breakdown sits on its own white panel, so every colour (the blue "Ulush" too) reads on it */}
+                  <div className="if-breakdown">
+                    <span className="if-split-label">{f.split}</span>
+                    <div className="if-split" aria-hidden="true">
+                      {RULES.map((rule, index) => <i key={rule.key} style={{ background: rule.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
+                      <i className="if-split-rest" style={{ flexGrow: REST }} />
+                    </div>
+                    <ul className="if-legend">
+                      {RULES.map((rule) => <li key={rule.key}><i style={{ background: rule.color }} />{f.rules[rule.key].name}<em>{percentText(rule.percent, locale)}%</em></li>)}
+                      <li><i className="if-split-rest" />{f.net}<em>{percentText(Number(REST.toFixed(2)), locale)}%</em></li>
+                    </ul>
                   </div>
-                  <ul className="if-legend">
-                    {RULES.map((rule) => <li key={rule.key}><i style={{ background: rule.color }} />{f.rules[rule.key].name}</li>)}
-                  </ul>
                   <span className="if-done"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>{f.done}</span>
                 </div>
               </div>
