@@ -27,5 +27,5 @@ export function proxy(req: NextRequest) {
 
 export const config = {
   // pages only: no static files, no metadata files
-  matcher: ["/((?!_next|favicon.ico|icon.svg|og.png|robots.txt|sitemap.xml|.*\\.).*)"],
+  matcher: ["/((?!_next|favicon.ico|icon.png|og.png|robots.txt|sitemap.xml|.*\\.).*)"],
 };

@@ -23,6 +23,8 @@ export interface ParticleTextProps {
   fontSize?: number | string;
   fontWeight?: number | string;
   fontFamily?: string;
+  /** a picture (e.g. a logo) to build the particles from instead of `text`; its opaque pixels become particles */
+  image?: string;
   glow?: boolean;
   className?: string;
   style?: CSSProperties;
@@ -98,6 +100,14 @@ const resolveFontSize = (
   return size;
 };
 
+const loadImage = (src: string): Promise<HTMLImageElement | null> =>
+  new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+
 const waitForFonts = async (font: string): Promise<void> => {
   if (!('fonts' in document)) return;
 
@@ -129,6 +139,7 @@ const ParticleText = ({
   fontSize = 'clamp(3rem, 12vw, 8rem)',
   fontWeight = 800,
   fontFamily = 'inherit',
+  image = '',
   glow = true,
   className = '',
   style
@@ -160,6 +171,7 @@ const ParticleText = ({
       fontSize,
       fontWeight,
       fontFamily,
+      image,
       glow
     };
     wakeRef.current();
@@ -211,7 +223,7 @@ const ParticleText = ({
       !s.fontFamily || s.fontFamily === 'inherit'
         ? window.getComputedStyle(container).fontFamily || 'sans-serif'
         : s.fontFamily;
-    const layoutKey = (s: Settings) => [s.text, s.fontSize, s.fontWeight, family(s), s.density].join('|');
+    const layoutKey = (s: Settings) => [s.text, s.image, s.fontSize, s.fontWeight, family(s), s.density].join('|');
     const sizeKey = () => {
       const rect = container.getBoundingClientRect();
       return `${Math.floor(rect.width)}x${Math.floor(rect.height)}@${Math.min(window.devicePixelRatio || 1, 2)}`;
@@ -603,47 +615,58 @@ const ParticleText = ({
       if (nextWidth <= 0 || nextHeight <= 0) return;
 
       const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
-      const resolvedFamily = family(s);
-      let resolvedSize = resolveFontSize(s.fontSize, container, s.fontWeight, resolvedFamily);
-      let font = `${s.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
-
-      await waitForFonts(font);
-      if (currentBuild !== buildId || !alive) return;
 
       const offscreen = document.createElement('canvas');
       const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
       if (!offCtx) return;
 
-      const content = String(s.text || ' ');
-      const maxTextWidth = nextWidth * 0.92;
-      offCtx.font = font;
-      let metrics = offCtx.measureText(content);
-      const measuredWidth = Math.max(1, metrics.width);
-      if (measuredWidth > maxTextWidth) {
-        resolvedSize = Math.max(18, resolvedSize * (maxTextWidth / measuredWidth));
-        font = `${s.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
+      const picture = s.image ? await loadImage(s.image) : null;
+      if (currentBuild !== buildId || !alive) return;
+      if (picture) {
+        // the picture, scaled to fit the box like the text would
+        const fit = Math.min((nextWidth * 0.92) / picture.naturalWidth, (nextHeight * 0.86) / picture.naturalHeight);
+        offscreen.width = Math.max(1, Math.round(picture.naturalWidth * fit));
+        offscreen.height = Math.max(1, Math.round(picture.naturalHeight * fit));
+        offCtx.drawImage(picture, 0, 0, offscreen.width, offscreen.height);
+      } else {
+        const resolvedFamily = family(s);
+        let resolvedSize = resolveFontSize(s.fontSize, container, s.fontWeight, resolvedFamily);
+        let font = `${s.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
+
         await waitForFonts(font);
         if (currentBuild !== buildId || !alive) return;
+
+        const content = String(s.text || ' ');
+        const maxTextWidth = nextWidth * 0.92;
         offCtx.font = font;
-        metrics = offCtx.measureText(content);
+        let metrics = offCtx.measureText(content);
+        const measuredWidth = Math.max(1, metrics.width);
+        if (measuredWidth > maxTextWidth) {
+          resolvedSize = Math.max(18, resolvedSize * (maxTextWidth / measuredWidth));
+          font = `${s.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
+          await waitForFonts(font);
+          if (currentBuild !== buildId || !alive) return;
+          offCtx.font = font;
+          metrics = offCtx.measureText(content);
+        }
+
+        const left = Math.ceil(metrics.actualBoundingBoxLeft || 0);
+        const right = Math.ceil(metrics.actualBoundingBoxRight || metrics.width);
+        const ascent = Math.ceil(metrics.actualBoundingBoxAscent || resolvedSize * 0.78);
+        const descent = Math.ceil(metrics.actualBoundingBoxDescent || resolvedSize * 0.22);
+        const padding = Math.max(12, Math.ceil(resolvedSize * 0.08));
+        const textWidth = Math.max(1, left + right);
+        const textHeight = Math.max(1, ascent + descent);
+
+        offscreen.width = textWidth + padding * 2;
+        offscreen.height = textHeight + padding * 2;
+        offCtx.clearRect(0, 0, offscreen.width, offscreen.height);
+        offCtx.font = font;
+        offCtx.textAlign = 'left';
+        offCtx.textBaseline = 'alphabetic';
+        offCtx.fillStyle = '#ffffff';
+        offCtx.fillText(content, padding - left, padding + ascent);
       }
-
-      const left = Math.ceil(metrics.actualBoundingBoxLeft || 0);
-      const right = Math.ceil(metrics.actualBoundingBoxRight || metrics.width);
-      const ascent = Math.ceil(metrics.actualBoundingBoxAscent || resolvedSize * 0.78);
-      const descent = Math.ceil(metrics.actualBoundingBoxDescent || resolvedSize * 0.22);
-      const padding = Math.max(12, Math.ceil(resolvedSize * 0.08));
-      const textWidth = Math.max(1, left + right);
-      const textHeight = Math.max(1, ascent + descent);
-
-      offscreen.width = textWidth + padding * 2;
-      offscreen.height = textHeight + padding * 2;
-      offCtx.clearRect(0, 0, offscreen.width, offscreen.height);
-      offCtx.font = font;
-      offCtx.textAlign = 'left';
-      offCtx.textBaseline = 'alphabetic';
-      offCtx.fillStyle = '#ffffff';
-      offCtx.fillText(content, padding - left, padding + ascent);
 
       const imageData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
       const targets: Target[] = [];

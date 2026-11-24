@@ -27,7 +27,7 @@ export function AiReceipt({ t }: { t: Dict }) {
     <section className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 md:grid-cols-[1.15fr_1fr] md:gap-12 md:px-10 md:py-32">
       <div ref={ref} className="order-2 mx-auto w-full max-w-md rounded-[2rem] border border-line bg-card p-4 shadow-2xl shadow-blue-950/10 md:order-1">
         <div className="flex items-center gap-3 border-b border-line px-1 pb-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary dark:text-accent"><MorefinMark className="size-5" /></span>
+          <span className="flex size-9 items-center justify-center rounded-full bg-primary/10"><MorefinMark className="size-6" /></span>
           <span className="text-sm font-semibold">Morefin AI</span>
         </div>
         <div className="flex h-[27rem] flex-col justify-end gap-3 overflow-hidden pt-4 text-sm">

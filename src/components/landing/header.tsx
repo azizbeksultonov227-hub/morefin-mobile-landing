@@ -19,7 +19,7 @@ export function Header({ locale, signIn }: { locale: Locale; signIn: string }) {
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${scrolled ? "border-b border-line bg-bg/70 backdrop-blur-xl" : "border-b border-transparent"}`}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-10">
-        <a href={path(locale)} aria-label="Morefin"><Wordmark /></a>
+        <a href={path(locale)} className="shrink-0"><Wordmark priority height={36} className="h-8 md:h-9" /></a>
         <nav className="flex items-center gap-1 text-sm">
           <Langs locale={locale} />
           <a href={APP_URL} className="ml-2 rounded-full border border-line bg-card/50 px-4 py-1.5 backdrop-blur transition hover:bg-fg hover:text-bg">{signIn}</a>

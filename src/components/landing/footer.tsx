@@ -3,13 +3,14 @@
 import { useInView } from "motion/react";
 import { useRef } from "react";
 import dynamic from "next/dynamic";
+import { LOGO } from "@/components/mark";
 import { APP_URL, type Locale } from "@/i18n";
 import { Langs } from "./header";
 
 // the pixel wordmark is only fetched once the footer comes near
 const ParticleText = dynamic(() => import("@/components/rb/particle-text"), { ssr: false });
 
-// the wordmark is made of pixels: the pointer scatters them, a click bursts them, they always come back
+// the logo is made of pixels (like its own pixel "fin"): the pointer scatters them, a click bursts them, they always come back
 export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const near = useInView(ref, { once: true, margin: "200px" });
@@ -22,10 +23,11 @@ export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
         <a href={APP_URL} className="transition hover:text-fg">{signIn}</a>
         <span>© 2026 Morefin</span>
       </div>
-      <div ref={ref} className="h-[clamp(150px,27vw,420px)] text-fg">
+      <div ref={ref} className="h-[clamp(150px,27vw,420px)] text-primary">
         {near && (
           <ParticleText
             text="Morefin"
+            image={LOGO.src}
             shape="square"
             particleSize={wide ? 5 : 3}
             density={wide ? 7 : 4}
@@ -36,8 +38,6 @@ export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
             pointerRepel={70}
             repelRadius={110}
             idleDrift={0.4}
-            fontSize="clamp(5rem, 24vw, 22rem)"
-            fontWeight={700}
             glow={false}
             className="!min-h-0"
           />
