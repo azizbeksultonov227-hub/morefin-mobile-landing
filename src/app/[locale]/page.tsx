@@ -3,8 +3,8 @@ import { AiReceipt } from "@/components/landing/ai-receipt";
 import { Footer } from "@/components/landing/footer";
 import { Header } from "@/components/landing/header";
 import { Hero } from "@/components/landing/hero";
+import { IncomeFlow } from "@/components/landing/income-flow";
 import { More } from "@/components/landing/more";
-import { Split } from "@/components/landing/split";
 import { StickyCta } from "@/components/landing/sticky-cta";
 import { ScrollWords } from "@/components/scroll-words";
 import { APP_URL, DICT, type Locale } from "@/i18n";
@@ -17,7 +17,7 @@ export default async function Page({ params }: PageProps<"/[locale]">) {
       <Header locale={locale} signIn={t.signIn} />
       <main>
         <Hero t={t} />
-        <Split t={t} />
+        <IncomeFlow t={t} locale={locale} start={t.start} />
         <AiReceipt t={t} />
         <More t={t} />
         <section className="relative px-5 py-24 text-center [background:radial-gradient(60%_70%_at_50%_100%,rgb(31_79_234/0.16),transparent)] md:py-36">
