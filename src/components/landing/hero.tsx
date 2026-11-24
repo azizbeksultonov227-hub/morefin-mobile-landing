@@ -36,7 +36,7 @@ export function Hero({ t }: { t: Dict }) {
   const net = amount * (1 - RULES.partner - RULES.kpi - RULES.tax);
 
   return (
-    <section data-hero className="relative flex min-h-svh flex-col overflow-hidden">
+    <section data-hero className="relative flex flex-col overflow-hidden md:min-h-svh">
       {fine ? (
         <CursorGrid className="!absolute inset-0" cellSize={46} color="#3b6cff" lightMode={light} radius={140} holdTime={700} fadeDuration={2200} fillOpacity={light ? 0.1 : 0.16} gridOpacity={light ? 0.07 : 0.06} spotlight={0.5} />
       ) : (
@@ -44,7 +44,7 @@ export function Hero({ t }: { t: Dict }) {
       )}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] [background:radial-gradient(55%_60%_at_50%_0%,rgb(31_79_234/0.18),transparent)]" />
 
-      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-10 pt-24 md:px-10 md:pb-14 md:pt-28">
+      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-12 pt-24 md:px-10 md:pb-14 md:pt-28">
         <p className="appear mb-5 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-primary dark:text-accent">
           <span className="size-1.5 animate-pulse rounded-full bg-current motion-reduce:animate-none" /> {t.eyebrow}
         </p>

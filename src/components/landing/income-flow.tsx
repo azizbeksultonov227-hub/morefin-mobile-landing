@@ -12,14 +12,17 @@ import "./income-flow.css";
 
 // One income and four percentage rules. The percentages are exact on purpose:
 // 5,87% is calculated as 5,87%, never rounded to 6. Each rule has its own
-// colour, shared by its card, its connectors and its slice of the result.
+// colour, shared by its card, its connectors and its slice of the result;
+// they are this page's colours: primary, slate, accent and amber.
 const RULES = [
-  { key: "share", percent: 5.87, color: "#2C98E6" },
-  { key: "tax", percent: 4, color: "#7A70D4" },
-  { key: "kpi", percent: 2, color: "#12A5B8" },
+  { key: "share", percent: 5.87, color: "#1F4FEA" },
+  { key: "tax", percent: 4, color: "#64748B" },
+  { key: "kpi", percent: 2, color: "#3B9DFB" },
   // Running costs are the largest slice; what remains is a little over half.
   { key: "fee", percent: 30, color: "#F59E0B" },
 ] as const;
+// a heading's words light up one after another while the section scrolls in, like every heading on this page
+const DIM = 0.18;
 const REST = 100 - RULES.reduce((sum, rule) => sum + rule.percent, 0);
 const COINS = 7;
 const INCOMES = [12_000_000, 5_000_000, 40_000_000];
@@ -69,20 +72,20 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     if (!root) return;
     const lead = reduced ? 1 : leadRef.current;
     const scroll = reduced ? 1 : progressRef.current;
-    // Act one: the heading arrives in the middle of the screen. Act two: the
-    // workflow rises from below and pushes it to the top, where it stays.
-    const dock = reduced ? 1 : ease(span(scroll, 0.1, 0.3));
+    // Act one, while the section scrolls in: the heading's words light up and the
+    // workflow rises from below into place under it. (On the site the heading first
+    // waits alone mid-screen; here that half screen of empty page is left out.)
+    const dock = reduced ? 1 : ease(span(lead, 0.35, 0.95));
     const stage = root.querySelector<HTMLElement>(".if-stage")!;
     const head = root.querySelector<HTMLElement>(".if-head")!;
     const body = root.querySelector<HTMLElement>(".if-body")!;
-    const centred = stage.clientHeight / 2 - (head.offsetTop + head.offsetHeight / 2);
-    const reveal = ease(span(lead, 0.3, 0.9));
-    head.style.transform = dock < 1 ? `translate3d(0, ${centred * (1 - dock)}px, 0) scale(${0.86 + 0.14 * reveal})` : "";
-    head.style.opacity = String(reveal);
-    body.style.transform = dock < 1 ? `translate3d(0, ${stage.clientHeight * 0.6 * (1 - dock)}px, 0)` : "";
+    const lit = span(lead, 0.2, 0.75);
+    const words = head.querySelectorAll<HTMLElement>(".if-word");
+    words.forEach((word, index) => { word.style.opacity = String(DIM + (1 - DIM) * span(lit, index / words.length, (index + 1) / words.length)); });
+    body.style.transform = dock < 1 ? `translate3d(0, ${stage.clientHeight * 0.4 * (1 - dock)}px, 0)` : "";
     body.style.opacity = String(dock);
-    // The workflow itself plays over the rest of the scroll.
-    const progress = reduced ? 1 : span(scroll, 0.3, 1);
+    // Act two, pinned: the workflow itself plays over the whole track.
+    const progress = scroll;
     const amount = incomeRef.current;
     // Draw a connector up to `value` and ride a pulse on its leading end.
     const wire = (name: string, value: number) => {
@@ -184,11 +187,16 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     const root = rootRef.current;
     if (!root || reduced) return;
     const track = root.querySelector<HTMLElement>(".if-track")!;
+    const stage = root.querySelector<HTMLElement>(".if-stage")!;
     let raf = 0;
+    let stageTop = "";
     const update = () => {
       raf = 0;
       const rect = track.getBoundingClientRect();
       const vh = innerHeight;
+      // phones: where the shorter stage pins, so it sits mid-screen and clear of the header (CSS uses it below 1024px)
+      const top = `${Math.round(Math.max(72, (vh - stage.offsetHeight) / 2))}px`;
+      if (top !== stageTop) root.style.setProperty("--stage-top", (stageTop = top));
       if (rect.top > vh * 1.5 || rect.bottom < -vh * 0.5) return; // far off screen: nothing to draw
       leadRef.current = clamp((vh - rect.top) / vh);
       progressRef.current = clamp(-rect.top / Math.max(1, rect.height - vh));
@@ -227,8 +235,11 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">
-            <h2>{f.title}</h2>
-            <p>{f.subtitle}</p>
+            <h2 className="text-[clamp(2.1rem,4.6vw,4rem)] font-semibold leading-[1] tracking-[-0.04em]">
+              <span className="sr-only">{f.title}</span>
+              <span aria-hidden>{f.title.split(" ").map((word, index) => <span key={index} className="if-word">{word} </span>)}</span>
+            </h2>
+            <p className="text-base md:text-lg">{f.subtitle}</p>
           </header>
 
           <div className="if-body">

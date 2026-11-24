@@ -26,7 +26,7 @@ export function AiReceipt({ t }: { t: Dict }) {
   return (
     // phones keep the desktop pairing: the chat on the left, shrunk like a picture (max-w-md = 28 of its "16px"),
     // the words on the right at their reading size; sizes inside the chat are all on Tailwind's scale so they shrink with it
-    <section className="mx-auto grid max-w-6xl grid-cols-[1.15fr_1fr] items-center gap-4 px-5 py-20 md:gap-12 md:px-10 md:py-32">
+    <section className="mx-auto grid max-w-6xl grid-cols-[1.15fr_1fr] items-center gap-4 px-5 py-14 md:gap-12 md:px-10 md:py-24">
       <div ref={ref} className="picture mx-auto w-full max-w-md rounded-[calc(var(--spacing)*8)] border border-line bg-card p-4 shadow-2xl shadow-blue-950/10" style={{ "--pf": "calc((100vw - 56px) * 0.535 / 28)" } as CSSProperties}>
         <div className="flex items-center gap-3 border-b border-line px-1 pb-3">
           <span className="flex size-9 items-center justify-center rounded-full bg-primary/10"><MorefinMark className="size-6" /></span>
