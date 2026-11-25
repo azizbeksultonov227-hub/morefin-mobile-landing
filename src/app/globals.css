@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* The page is light only: dark: utilities apply under a .dark class this page never sets, not the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-bg: var(--bg);
   --color-fg: var(--fg);
@@ -29,20 +32,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a111c;
-    --fg: #f5f8fc;
-    --muted: #94a3b8;
-    --card: #101a2a;
-    --line: rgb(255 255 255 / 8%);
-    --primary: #4b74ff;
-    --primary-fg: #ffffff;
-    --accent: #7fc0ff;
-    --success: #34d399;
-    color-scheme: dark;
-  }
-}
 
 html { background: var(--bg); color: var(--fg); }
 body { -webkit-tap-highlight-color: rgb(31 79 234 / 0.12); font-family: var(--font-sans), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }

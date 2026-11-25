@@ -15,7 +15,6 @@ const CursorGrid = dynamic(() => import("@/components/rb/cursor-grid"), { ssr: f
 export function Hero({ t }: { t: Dict }) {
   const [ready, setReady] = useState(false);
   const fine = useMedia("(pointer: fine)");
-  const light = useMedia("(prefers-color-scheme: light)");
   const { count } = usePresses();
   const { amount, method } = incomeAt(count);
 
@@ -36,9 +35,9 @@ export function Hero({ t }: { t: Dict }) {
   const net = amount * (1 - RULES.partner - RULES.kpi - RULES.tax);
 
   return (
-    <section data-hero className="relative flex flex-col overflow-hidden md:min-h-svh">
+    <section data-hero className="relative flex min-h-svh flex-col overflow-hidden">
       {fine ? (
-        <CursorGrid className="!absolute inset-0" cellSize={46} color="#3b6cff" lightMode={light} radius={140} holdTime={700} fadeDuration={2200} fillOpacity={light ? 0.1 : 0.16} gridOpacity={light ? 0.07 : 0.06} spotlight={0.5} />
+        <CursorGrid className="!absolute inset-0" cellSize={46} color="#3b6cff" lightMode radius={140} holdTime={700} fadeDuration={2200} fillOpacity={0.1} gridOpacity={0.07} spotlight={0.5} />
       ) : (
         <div aria-hidden className="absolute inset-0 [background-image:linear-gradient(var(--line)_1px,transparent_1px),linear-gradient(90deg,var(--line)_1px,transparent_1px)] [background-size:46px_46px] [mask-image:radial-gradient(90%_60%_at_50%_0%,black,transparent)]" />
       )}

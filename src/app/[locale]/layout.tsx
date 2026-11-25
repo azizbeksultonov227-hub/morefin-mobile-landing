@@ -15,10 +15,9 @@ export const dynamicParams = false;
 export const generateStaticParams = () => LOCALES.map((locale) => ({ locale }));
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fbfd" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a111c" },
-  ],
+  // light only, whatever the phone's own setting
+  themeColor: "#f8fbfd",
+  colorScheme: "light",
 };
 
 export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
