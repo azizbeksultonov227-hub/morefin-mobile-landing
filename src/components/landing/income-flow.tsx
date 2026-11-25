@@ -24,6 +24,9 @@ const RULES = [
 ] as const;
 const REST = 100 - RULES.reduce((sum, rule) => sum + rule.percent, 0);
 const COINS = 7;
+// the story plays slowly, holds its result, then plays again
+const PLAY = 10000;
+const PAUSE = 2500;
 const INCOMES = [12_000_000, 5_000_000, 40_000_000];
 
 const group = (value: number) => Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -57,8 +60,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   const f = t.flow;
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLElement>(null);
-  // lead: the section scrolling into view (the heading fades in); progress: the pinned track, 0 to 1
-  const leadRef = useRef(0);
+  // how far the story has played, 0 to 1 (driven by time once the section is fully on screen, not by scrolling)
   const progressRef = useRef(0);
   const incomeRef = useRef(INCOMES[0]);
   const [income, setIncome] = useState(0);
@@ -69,21 +71,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   const paint = () => {
     const root = rootRef.current;
     if (!root) return;
-    const lead = reduced ? 1 : leadRef.current;
-    const scroll = reduced ? 1 : progressRef.current;
-    // Act one, while the section scrolls in: the heading's words light up and the
-    // workflow rises from below into place under it. (On the site the heading first
-    // waits alone mid-screen; here that half screen of empty page is left out.)
-    const dock = reduced ? 1 : ease(span(lead, 0.35, 0.95));
-    const stage = root.querySelector<HTMLElement>(".if-stage")!;
-    const head = root.querySelector<HTMLElement>(".if-head")!;
-    const body = root.querySelector<HTMLElement>(".if-body")!;
-    // the heading's words rise in like the hero's, once it is on screen (CSS runs them; this only starts them)
-    if (lead >= 0.3 && !head.classList.contains("is-in")) head.classList.add("is-in");
-    body.style.transform = dock < 1 ? `translate3d(0, ${stage.clientHeight * 0.4 * (1 - dock)}px, 0)` : "";
-    body.style.opacity = String(dock);
-    // Act two, pinned: the workflow itself plays over the whole track.
-    const progress = scroll;
+    const progress = reduced ? 1 : progressRef.current;
     const amount = incomeRef.current;
     // Draw a connector up to `value` and ride a pulse on its leading end.
     const wire = (name: string, value: number) => {
@@ -180,34 +168,55 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     return () => observer.disconnect();
   }, []);
 
-  // Where ScrollTrigger used to sit: how far the pinned track has been scrolled, painted once per frame.
+  // The story is not tied to scrolling. The heading's words rise in as the section comes into view; once the whole
+  // section is on screen the workflow plays by itself, slowly (PLAY), holds the result for PAUSE, and starts again.
+  // Leaving the section stops it; coming back fully starts it from the beginning.
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || reduced) return;
-    const track = root.querySelector<HTMLElement>(".if-track")!;
-    const stage = root.querySelector<HTMLElement>(".if-stage")!;
+    if (!root) return;
+    const head = root.querySelector<HTMLElement>(".if-head")!;
+    if (reduced) {
+      head.classList.add("is-in");
+      paintRef.current();
+      return;
+    }
     let raf = 0;
-    let stageTop = "";
-    const update = () => {
-      raf = 0;
-      const rect = track.getBoundingClientRect();
-      const vh = innerHeight;
-      // phones: where the shorter stage pins, a little above mid-screen and clear of the header (CSS uses it below 1024px)
-      const top = `${Math.round(Math.max(72, (vh - stage.offsetHeight) * 0.35))}px`;
-      if (top !== stageTop) root.style.setProperty("--stage-top", (stageTop = top));
-      if (rect.top > vh * 1.5 || rect.bottom < -vh * 0.5) return; // far off screen: nothing to draw
-      leadRef.current = clamp((vh - rect.top) / vh);
-      progressRef.current = clamp(-rect.top / Math.max(1, rect.height - vh));
+    let wait = 0;
+    let begun = 0;
+    let playing = false;
+    const frame = (now: number) => {
+      if (!begun) begun = now;
+      progressRef.current = clamp((now - begun) / PLAY);
+      paintRef.current();
+      if (progressRef.current < 1) raf = requestAnimationFrame(frame);
+      else wait = window.setTimeout(() => { begun = 0; raf = requestAnimationFrame(frame); }, PAUSE);
+    };
+    const play = () => {
+      if (playing) return;
+      playing = true;
+      begun = 0;
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      if (!playing) return;
+      playing = false;
+      cancelAnimationFrame(raf);
+      clearTimeout(wait);
+      progressRef.current = 0;
       paintRef.current();
     };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    addEventListener("scroll", onScroll, { passive: true });
-    addEventListener("resize", onScroll);
+    const io = new IntersectionObserver(([entry]) => {
+      // how much of the section shows, out of all of it (or all of the screen, if it is taller than the screen)
+      const shown = entry.intersectionRect.height / Math.max(1, Math.min(entry.boundingClientRect.height, innerHeight));
+      if (shown >= 0.3) head.classList.add("is-in");
+      if (shown >= 0.97) play();
+      else if (shown < 0.5) stop();
+    }, { threshold: Array.from({ length: 41 }, (_, i) => i / 40) });
+    io.observe(root);
     return () => {
-      removeEventListener("scroll", onScroll);
-      removeEventListener("resize", onScroll);
+      io.disconnect();
       cancelAnimationFrame(raf);
+      clearTimeout(wait);
     };
   }, [reduced]);
 
@@ -229,7 +238,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
 
   return (
     <section ref={rootRef} id="how" className="income-flow" data-reduced={reduced}>
-      {/* the page's sticky start button steps aside while this pinned stage fills the screen */}
+      {/* the page's sticky start button steps aside while this section, which has its own button, is on screen */}
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">

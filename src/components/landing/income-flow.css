@@ -1,29 +1,24 @@
 /* Ported from the Morefin site (src/sections/income-flow.css), kept as close to the original as the page allows.
    Income workflow: one income fans out to four percentage rules and settles
-   into what remains. Scroll drives the story; a swipe changes the income.
-   Changes for this page: the section does not start a screen early over the hero (there are no closing lines to
-   fade behind), so it has no negative margin and its track is 100vh shorter; the stage uses the small viewport
-   height so a phone's toolbar never covers it; the heading is set like this page's others (its words light up as the
-   section scrolls in) and the workflow rises in under it, so there is no half screen of empty page and the track is
-   280vh; phones keep the wide three-column board, shrunk to fit and pinned mid-screen (see the last media block),
-   instead of the site's one-panel-at-a-time strip; --line is renamed so the page's own --line token stays intact. */
+   into what remains; a swipe changes the income.
+   Changes for this page: the story is not driven by scrolling and nothing is pinned. The section is an ordinary
+   block; once it is fully on screen the story plays by itself, slowly, holds its result and plays again (timing in
+   income-flow.tsx). The heading is set like this page's others (its words rise in); phones keep the wide
+   three-column board, shrunk to fit (see the last media block), instead of the site's one-panel-at-a-time strip;
+   --line is renamed so the page's own --line token stays intact. */
 .income-flow { position: relative; background: linear-gradient(180deg, #2C98E6 0%, #2788CF 38%, #1E6AA1 100%); color: #fff; --ink: #0F2A47; --if-line: rgb(255 255 255 / .3); }
 
-/* Heading: the other sections' scale and centring. It lives inside the pinned
-   stage: first in the middle, then docked at the top above the workflow. */
+/* Heading: the other sections' scale and centring, above the workflow. */
 .income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; will-change: transform, opacity; }
 .income-flow .if-head h2 { margin: 0; max-width: min(1000px, 92vw); text-wrap: balance; }
 /* the hero's word rise (globals.css), held on its first frame until the heading is on screen */
 .income-flow .if-head .word > span { animation-play-state: paused; }
 .income-flow .if-head.is-in .word > span { animation-play-state: running; }
 .income-flow .if-head p { margin: 0; font-weight: 500; max-width: min(760px, 92vw); color: rgb(255 255 255 / .92); }
-.income-flow .if-body { position: relative; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 2.4vh, 30px); will-change: transform, opacity; }
+.income-flow .if-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.4vh, 30px); }
 .income-flow[data-reduced="true"] .if-head, .income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
 
-.income-flow .if-track { height: 280vh; }
-.income-flow[data-reduced="true"] .if-track { height: auto; }
-.income-flow .if-stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: clamp(24px, 4.5vh, 56px); padding: clamp(72px, 8.5vh, 96px) clamp(20px, 3.2vw, 64px) clamp(40px, 6vh, 80px); box-sizing: border-box; overflow: hidden; }
-.income-flow[data-reduced="true"] .if-stage { position: relative; height: auto; }
+.income-flow .if-stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(24px, 4.5vh, 56px); padding: clamp(64px, 9vh, 104px) clamp(20px, 3.2vw, 64px) clamp(56px, 8vh, 96px); box-sizing: border-box; overflow: hidden; }
 .income-flow .if-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(52% 50% at 50% 46%, rgb(191 224 255 / .3), transparent 72%); pointer-events: none; }
 
 /* Everything on the board is sized in em, so it shrinks on short screens. */
@@ -149,12 +144,11 @@
 .income-flow .if-rule-amount em, .income-flow .if-rule-name small, .income-flow .if-income > small, .income-flow .if-legend { letter-spacing: -0.01em; }
 
 @media (max-width: 1023px) {
-  /* the stage is only as tall as what it holds and pins mid-screen (--stage-top, set from its height); it follows
-     the hero closely and the next section follows its button straight away */
-  .income-flow .if-stage { height: auto; min-height: 0; top: var(--stage-top, 72px); gap: 16px; padding: 16px 12px 24px; }
+  /* phones: a compact block around the shrunk board, short enough to be fully on screen (which starts the story) */
+  .income-flow .if-stage { gap: 16px; padding: 48px 12px 40px; }
   .income-flow .if-head { gap: 8px; padding: 0 8px; }
   .income-flow .if-head p { font-size: clamp(15px, 4.3vw, 19px); }
-  .income-flow .if-body { flex: none; justify-content: flex-start; gap: 18px; }
+  .income-flow .if-body { gap: 18px; }
   /* 50em is the board's natural width once its big figures are trimmed below; 24px is the stage's side padding */
   .income-flow .if-board { width: 100%; font-size: min(15px, calc((100vw - 24px) / 50)); column-gap: 2.4em; }
   .income-flow .if-income strong { font-size: 1.6em; }
