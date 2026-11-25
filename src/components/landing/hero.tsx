@@ -1,38 +1,17 @@
 "use client";
 
-import { AnimatePresence } from "motion/react";
-import * as m from "motion/react-m";
 import { ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { SplitWords } from "@/components/split-words";
-import { APP_URL, money, RULES, type Dict } from "@/i18n";
-import { incomeAt, press, usePresses } from "./presses";
+import { APP_URL, type Dict } from "@/i18n";
 
 // the moving grid is a desktop treat: phones get a still one in CSS and never download it
 const CursorGrid = dynamic(() => import("@/components/rb/cursor-grid"), { ssr: false });
 
+// The first screen: one line saying what Morefin is, and the button to start.
 export function Hero({ t }: { t: Dict }) {
-  const [ready, setReady] = useState(false);
   const fine = useMedia("(pointer: fine)");
-  const { count } = usePresses();
-  const { amount, method } = incomeAt(count);
-
-  useEffect(() => {
-    const id = setTimeout(() => setReady(true), 700);
-    // a click, not pointerdown: a swipe to scroll on a phone is not a press; links lead away, so they don't count
-    const down = (e: MouseEvent) => { if (!(e.target as Element).closest("a")) press(); };
-    addEventListener("click", down);
-    return () => { clearTimeout(id); removeEventListener("click", down); };
-  }, []);
-
-  const rows: [string, number, string?][] = [
-    [`${t.rows.income} · ${t.methods[method]}`, amount, "+"],
-    [`${t.rows.partner} ${RULES.partner * 100}%`, amount * RULES.partner, "−"],
-    [`${t.rows.kpi} ${RULES.kpi * 100}%`, amount * RULES.kpi, "−"],
-    [`${t.rows.tax} ${RULES.tax * 100}%`, amount * RULES.tax, "−"],
-  ];
-  const net = amount * (1 - RULES.partner - RULES.kpi - RULES.tax);
 
   return (
     <section data-hero className="relative flex min-h-svh flex-col overflow-hidden">
@@ -49,35 +28,10 @@ export function Hero({ t }: { t: Dict }) {
           <br />
           <span className="text-muted/80"><SplitWords text={t.h1b} delay={300} /></span>
         </h1>
-
-        {/* phones keep the desktop pairing: the card on the left, shrunk like a picture (400px wide = 25 of its "16px"),
-            the words and the button on the right at their normal reading size */}
-        <div className="mt-8 grid grid-cols-[1.08fr_1fr] items-end gap-4 md:mt-10 md:grid-cols-[minmax(0,400px)_1fr] md:gap-8">
-          <div className="picture appear rounded-2xl border border-line bg-card/90 p-5 font-mono text-sm shadow-xl shadow-blue-950/5" style={{ "--d": "700ms", "--pf": "calc((100vw - 56px) * 0.519 / 25)" } as React.CSSProperties}>
-            <p className="mb-2.5 text-xs text-muted">{t.card}</p>
-            {rows.map(([k, v, sign], i) => (
-              <div key={i} className="flex h-9 items-center justify-between gap-3 border-t border-line">
-                <span className="truncate text-muted">{k}</span>
-                <Value show={ready} id={count} delay={i * 0.12} className={i === 0 ? "text-success" : undefined}>
-                  {sign}{money(v)}
-                </Value>
-              </div>
-            ))}
-            <div className="flex h-10 items-center justify-between gap-3 border-t border-line font-semibold">
-              <span>{t.rows.net}</span>
-              <Value show={ready} id={count} delay={0.5} className="text-primary dark:text-accent">
-                {money(net)} {t.currency}
-              </Value>
-            </div>
-            <p className="mt-1.5 text-xs text-muted">{t.tryIt}</p>
-          </div>
-
-          <div className="appear md:justify-self-end md:text-right" style={{ "--d": "950ms" } as React.CSSProperties}>
-            <p className="max-w-sm text-sm text-muted md:ml-auto md:text-lg">{t.lead}</p>
-            <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-fg px-3 py-3 text-center text-[13px] font-medium leading-tight text-bg transition hover:bg-primary hover:text-white md:mt-5 md:inline-flex md:w-auto md:px-6 md:text-base">
-              {t.start} <ArrowRight className="hidden size-4 shrink-0 transition group-hover:translate-x-0.5 min-[400px]:block" />
-            </a>
-          </div>
+        <div className="appear mt-9 md:mt-12" style={{ "--d": "900ms" } as React.CSSProperties}>
+          <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto flex w-full items-center justify-center gap-2 rounded-full bg-fg px-7 py-4 font-medium text-bg transition hover:bg-primary hover:text-white sm:inline-flex sm:w-auto md:text-lg">
+            {t.start} <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+          </a>
         </div>
       </div>
     </section>
@@ -90,20 +44,5 @@ function useMedia(query: string) {
     (f) => { const mq = matchMedia(query); mq.addEventListener("change", f); return () => mq.removeEventListener("change", f); },
     () => matchMedia(query).matches,
     () => false,
-  );
-}
-
-/** A figure that rolls in from below whenever a new income arrives. */
-function Value({ show, id, delay, className = "", children }: { show: boolean; id: number; delay: number; className?: string; children: React.ReactNode }) {
-  return (
-    <span className={`relative inline-flex h-5 shrink-0 overflow-hidden tabular-nums ${className}`}>
-      <AnimatePresence mode="popLayout" initial={false}>
-        {show && (
-          <m.span key={id} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} transition={{ delay, type: "spring", stiffness: 420, damping: 32 }}>
-            {children}
-          </m.span>
-        )}
-      </AnimatePresence>
-    </span>
   );
 }

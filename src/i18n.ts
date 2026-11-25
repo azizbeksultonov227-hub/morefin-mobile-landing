@@ -14,8 +14,6 @@ export const path = (l: Locale) => `${BASE}${l === "uz" ? "/" : `/${l}`}`;
 const RU = new Set(["RU", "KZ", "KG", "TJ", "BY", "TM", "AZ", "AM", "MD"]);
 export const countryLocale = (c: string | null): Locale => (!c || c === "UZ" || c === "XX" || c === "T1" ? "uz" : RU.has(c) ? "ru" : "en");
 
-// the share each rule takes from an income; the figures illustrate the calculation, they are not customer data
-export const RULES = { partner: 0.2, kpi: 0.05, tax: 0.04 } as const;
 
 const uz = {
   name: "O‘zbekcha",
@@ -27,12 +25,7 @@ const uz = {
   start: "Bepul sinab ko‘rish",
   h1a: "Biznes moliyasini xatosiz yuritadigan",
   h1b: "AI xodimingiz",
-  card: "Morefin kirimni shunday hisoblaydi:",
-  rows: { income: "Kirim", partner: "Sherik ulushi", kpi: "KPI", tax: "Soliq", net: "Sof foyda" },
-  tryIt: "Bosib ko‘ring — yangi kirim tushadi.",
-  lead: "Kirim bo‘lishi bilan sof foyda avtomatik hisoblanadi. 95% qo‘l mehnatidan ozod bo‘lasiz.",
   currency: "so‘m",
-  methods: ["Click", "Naqd", "Bank", "Payme"],
 
   flow: {
     title: "Kirim bo‘lishi bilan sof foyda avtomatik hisoblanadi.",
@@ -94,12 +87,7 @@ const ru: Dict = {
   start: "Попробовать бесплатно",
   h1a: "Финансы бизнеса без ошибок ведёт",
   h1b: "ваш AI-сотрудник",
-  card: "Так Morefin считает доход:",
-  rows: { income: "Доход", partner: "Доля партнёра", kpi: "KPI", tax: "Налог", net: "Чистая прибыль" },
-  tryIt: "Нажмите — придёт новый доход.",
-  lead: "Как только приходит доход, чистая прибыль считается автоматически. Вы избавляетесь от 95% ручной работы.",
   currency: "сум",
-  methods: ["Click", "Наличные", "Банк", "Payme"],
 
   flow: {
     title: "Как только приходит доход, чистая прибыль считается автоматически.",
@@ -159,12 +147,7 @@ const en: Dict = {
   start: "Try it free",
   h1a: "Business finances without mistakes,",
   h1b: "kept by your AI employee",
-  card: "This is how Morefin counts an income:",
-  rows: { income: "Income", partner: "Partner share", kpi: "KPI", tax: "Tax", net: "Net profit" },
-  tryIt: "Tap anywhere — a new income arrives.",
-  lead: "The moment income arrives, net profit is calculated automatically. You are freed from 95% of the manual work.",
   currency: "UZS",
-  methods: ["Click", "Cash", "Bank", "Payme"],
 
   flow: {
     title: "The moment income arrives, net profit is calculated automatically.",
