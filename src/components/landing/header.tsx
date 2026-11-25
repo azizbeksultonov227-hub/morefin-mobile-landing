@@ -8,24 +8,35 @@ import { APP_URL, DICT, LOCALES, path, type Locale } from "@/i18n";
 // remember the visitor's own pick so "/" stops following their country
 export const pick = (l: Locale) => { document.cookie = `lang=${l}; path=/; max-age=31536000; samesite=lax`; };
 
-// A quiet bar: the logo, then on the right a small language menu and a light "log in" button, so nothing in it
-// outweighs the hero's own start button
+// The bar: the logo, then a small language menu and a soft "log in" button, so nothing in it outweighs the hero's
+// own start button. At the top of the page it sits flat on the hero. Further down it is a small white capsule with
+// air around it, which reads cleanly over any section (the blue one too) instead of a strip across the screen; and it
+// slides away while the visitor reads down, coming back the moment they scroll up.
 export function Header({ locale, signIn }: { locale: Locale; signIn: string }) {
   const [scrolled, setScrolled] = useState(false);
+  const [away, setAway] = useState(false);
   useEffect(() => {
-    const on = () => setScrolled(scrollY > 24);
+    let last = scrollY;
+    const on = () => {
+      const y = scrollY;
+      setScrolled(y > 24);
+      // ignore small jitters; near the top it always shows
+      if (Math.abs(y - last) < 8) return;
+      setAway(y > last && y > 160);
+      last = y;
+    };
     on();
     addEventListener("scroll", on, { passive: true });
     return () => removeEventListener("scroll", on);
   }, []);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${scrolled ? "border-b border-line bg-bg/80 backdrop-blur-xl" : "border-b border-transparent"}`}>
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3.5 min-[360px]:px-5 md:px-10">
+    <header className={`fixed inset-x-0 top-0 z-50 px-2.5 pt-2.5 transition-transform duration-300 ease-out motion-reduce:transition-none md:px-6 md:pt-3 ${away ? "-translate-y-[130%]" : ""}`}>
+      <div className={`mx-auto flex max-w-6xl items-center justify-between rounded-full py-1.5 pl-2.5 pr-1.5 transition-[background-color,box-shadow] duration-300 min-[360px]:pl-3 md:py-2 md:pl-5 ${scrolled ? "bg-white shadow-[0_10px_30px_-14px_rgb(15_23_42/0.35)] ring-1 ring-slate-900/[0.06]" : ""}`}>
         <a href={path(locale)} className="shrink-0"><Wordmark priority height={36} className="h-7 min-[360px]:h-8 md:h-9" /></a>
-        <nav className="flex items-center gap-1 min-[360px]:gap-2">
+        <nav className="flex items-center gap-0.5 min-[360px]:gap-1">
           <LangMenu locale={locale} />
-          <a href={APP_URL} className="flex h-9 items-center rounded-full border border-line bg-card px-4 text-sm font-medium text-fg shadow-sm shadow-slate-900/5 transition hover:border-fg/20 hover:shadow-md">{signIn}</a>
+          <a href={APP_URL} className="flex h-9 items-center rounded-full bg-slate-900/[0.06] px-4 text-sm font-semibold text-fg transition hover:bg-slate-900/10">{signIn}</a>
         </nav>
       </div>
     </header>
