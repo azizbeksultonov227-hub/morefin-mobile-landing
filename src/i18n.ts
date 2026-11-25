@@ -36,7 +36,6 @@ const uz = {
 
   flow: {
     title: "Kirim bo‘lishi bilan sof foyda avtomatik hisoblanadi.",
-    subtitle: "95% qo‘l mehnatidan ozod bo‘lasiz.",
     steps: ["Kirim", "Qoidalar o‘zi ishlaydi", "Natija"],
     incoming: "Kirim tushdi",
     waiting: "Kirim kutilmoqda",
@@ -104,7 +103,6 @@ const ru: Dict = {
 
   flow: {
     title: "Как только приходит доход, чистая прибыль считается автоматически.",
-    subtitle: "Вы избавляетесь от 95% ручной работы.",
     steps: ["Доход", "Правила работают сами", "Итог"],
     incoming: "Поступил доход",
     waiting: "Ожидаем доход",
@@ -170,7 +168,6 @@ const en: Dict = {
 
   flow: {
     title: "The moment income arrives, net profit is calculated automatically.",
-    subtitle: "You are freed from 95% of the manual work.",
     steps: ["Income", "Rules run themselves", "Result"],
     incoming: "Income received",
     waiting: "Waiting for income",

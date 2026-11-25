@@ -233,11 +233,9 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">
-            {/* set like the hero's heading: the claim, then its payoff a shade softer, words rising in one by one */}
+            {/* set like the hero's heading, words rising in one by one */}
             <h2 className="text-balance text-[clamp(1.75rem,4.4vw,4rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
               <SplitWords text={f.title} />
-              <br />
-              <span className="if-head-soft"><SplitWords text={f.subtitle} delay={300} /></span>
             </h2>
           </header>
 
