@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { SplitWords } from "@/components/split-words";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
 import "./income-flow.css";
 
@@ -21,8 +22,6 @@ const RULES = [
   // Running costs are the largest slice; what remains is a little over half.
   { key: "fee", percent: 30, color: "#F59E0B" },
 ] as const;
-// a heading's words light up one after another while the section scrolls in, like every heading on this page
-const DIM = 0.18;
 const REST = 100 - RULES.reduce((sum, rule) => sum + rule.percent, 0);
 const COINS = 7;
 const INCOMES = [12_000_000, 5_000_000, 40_000_000];
@@ -79,9 +78,8 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     const stage = root.querySelector<HTMLElement>(".if-stage")!;
     const head = root.querySelector<HTMLElement>(".if-head")!;
     const body = root.querySelector<HTMLElement>(".if-body")!;
-    const lit = span(lead, 0.2, 0.75);
-    const words = head.querySelectorAll<HTMLElement>(".if-word");
-    words.forEach((word, index) => { word.style.opacity = String(DIM + (1 - DIM) * span(lit, index / words.length, (index + 1) / words.length)); });
+    // the heading's words rise in like the hero's, once it is on screen (CSS runs them; this only starts them)
+    if (lead >= 0.3 && !head.classList.contains("is-in")) head.classList.add("is-in");
     body.style.transform = dock < 1 ? `translate3d(0, ${stage.clientHeight * 0.4 * (1 - dock)}px, 0)` : "";
     body.style.opacity = String(dock);
     // Act two, pinned: the workflow itself plays over the whole track.
@@ -235,11 +233,12 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       <div className="if-track" data-no-sticky>
         <div className="if-stage">
           <header className="if-head">
-            <h2 className="text-[clamp(1.75rem,4.6vw,4rem)] font-semibold leading-[1.02] tracking-[-0.04em]">
-              <span className="sr-only">{f.title}</span>
-              <span aria-hidden>{f.title.split(" ").map((word, index) => <span key={index} className="if-word">{word} </span>)}</span>
+            {/* set like the hero's heading: the claim, then its payoff a shade softer, words rising in one by one */}
+            <h2 className="text-balance text-[clamp(1.75rem,4.4vw,4rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+              <SplitWords text={f.title} />
+              <br />
+              <span className="if-head-soft"><SplitWords text={f.subtitle} delay={300} /></span>
             </h2>
-            <p className="text-base md:text-lg">{f.subtitle}</p>
           </header>
 
           <div className="if-body">

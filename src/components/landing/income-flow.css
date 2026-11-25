@@ -13,6 +13,10 @@
    stage: first in the middle, then docked at the top above the workflow. */
 .income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; will-change: transform, opacity; }
 .income-flow .if-head h2 { margin: 0; max-width: min(1000px, 92vw); text-wrap: balance; }
+.income-flow .if-head-soft { color: rgb(255 255 255 / .6); }
+/* the hero's word rise (globals.css), held on its first frame until the heading is on screen */
+.income-flow .if-head .word > span { animation-play-state: paused; }
+.income-flow .if-head.is-in .word > span { animation-play-state: running; }
 .income-flow .if-head p { margin: 0; font-weight: 500; max-width: min(760px, 92vw); color: rgb(255 255 255 / .92); }
 .income-flow .if-body { position: relative; width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 2.4vh, 30px); will-change: transform, opacity; }
 .income-flow[data-reduced="true"] .if-head, .income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
