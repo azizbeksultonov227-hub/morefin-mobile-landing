@@ -25,6 +25,16 @@ const uz = {
   start: "Bepul sinab ko‘rish",
   h1a: "Biznes moliyasini xatosiz yuritadigan",
   h1b: "AI xodimingiz",
+  // the hero's rotating line: one Morefin AI "employee" at a time, the job it is doing right now
+  agents: [
+    { role: "Hisobchi", text: "sof foydani hisoblayapti" },
+    { role: "Chek o‘quvchi", text: "xarid chekini xarajatga yozyapti" },
+    { role: "Ulush bo‘luvchi", text: "sherik ulushini ajratyapti" },
+    { role: "KPI hisoblagich", text: "sotuvchilar bonusini yozyapti" },
+    { role: "Qarz nazoratchisi", text: "to‘lov kuni yaqin qarzlarni ko‘rsatyapti" },
+    { role: "Reja tahlilchisi", text: "oylik plan bajarilishini tekshiryapti" },
+    { role: "Hisobotchi", text: "oylik foyda hisobotini tayyorlayapti" },
+  ],
   currency: "so‘m",
 
   flow: {
@@ -87,6 +97,15 @@ const ru: Dict = {
   start: "Попробовать бесплатно",
   h1a: "Финансы бизнеса без ошибок ведёт",
   h1b: "ваш AI-сотрудник",
+  agents: [
+    { role: "Бухгалтер", text: "считает чистую прибыль" },
+    { role: "Чек-ридер", text: "заносит чек покупки в расходы" },
+    { role: "Делитель долей", text: "откладывает долю партнёра" },
+    { role: "KPI-счётчик", text: "начисляет бонусы продавцам" },
+    { role: "Контролёр долгов", text: "показывает долги с близким сроком" },
+    { role: "Аналитик плана", text: "проверяет выполнение плана месяца" },
+    { role: "Отчётчик", text: "готовит отчёт о прибыли за месяц" },
+  ],
   currency: "сум",
 
   flow: {
@@ -147,6 +166,15 @@ const en: Dict = {
   start: "Try it free",
   h1a: "Business finances without mistakes,",
   h1b: "kept by your AI employee",
+  agents: [
+    { role: "Accountant", text: "is working out the net profit" },
+    { role: "Receipt reader", text: "is filing a purchase receipt as an expense" },
+    { role: "Share splitter", text: "is setting aside the partner’s share" },
+    { role: "KPI counter", text: "is crediting the sellers’ bonuses" },
+    { role: "Debt keeper", text: "is flagging debts that fall due soon" },
+    { role: "Plan analyst", text: "is checking this month’s plan" },
+    { role: "Reporter", text: "is preparing the monthly profit report" },
+  ],
   currency: "UZS",
 
   flow: {

@@ -1,0 +1,28 @@
+/* The hero's row of AI employees. Seven characters share one stage; each slides to its place and grows or shrinks
+   there (springy, so the one arriving in the middle settles with a small bounce), the line under them says what the
+   middle one is doing. Sizes are in em, so one font size scales the whole row. */
+.agents { font-size: 15px; }
+@media (min-width: 768px) { .agents { font-size: 20px; } }
+
+.agents-row { position: relative; width: 13.7em; height: 3.9em; } /* as wide as the five visible places, so the first lines up with the heading */
+.agents-char {
+  position: absolute; left: 50%; bottom: 0; width: 3.9em; height: 3.9em; margin-left: -1.95em;
+  transform-origin: 50% 100%;
+  transform: translateX(var(--x)) scale(var(--s));
+  transition: transform .75s cubic-bezier(.34, 1.45, .64, 1), opacity .45s ease-out;
+}
+.agents-char svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 .35em .4em rgb(15 23 42 / .18)); }
+
+/* now and then each one blinks; the one at work also bobs very slightly */
+.agents-eyes { transform-box: fill-box; transform-origin: center; animation: agents-blink 4.2s var(--blink, 0s) infinite; }
+@keyframes agents-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.12); } }
+.agents-char.is-on svg { animation: agents-bob 2.6s ease-in-out infinite; }
+@keyframes agents-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.12em); } }
+
+.agents-line { margin: .75em 0 0; max-width: 26em; font-size: 1em; line-height: 1.35; letter-spacing: -0.01em; color: var(--muted); animation: agents-in .55s cubic-bezier(.22, 1, .36, 1) both; }
+.agents-line b { font-weight: 600; color: var(--fg); }
+@keyframes agents-in { from { opacity: 0; filter: blur(5px); transform: translateY(.3em); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .agents-char, .agents-line, .agents-eyes, .agents-char.is-on svg { transition: none; animation: none; }
+}
