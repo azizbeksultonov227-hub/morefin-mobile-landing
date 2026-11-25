@@ -34,15 +34,13 @@ export function Hero({ t }: { t: Dict }) {
           <br />
           <span className="text-muted/80"><SplitWords text={t.h1b} delay={300} /></span>
         </h1>
-        {/* two ways on, always side by side: start free (a dark button in a glowing brand ring), or first see how it
-            works (a light one with a video mark, leading to the animated walk-through below). On a phone both are
-            compact and share the width; the light one's second line and the arrow come in once there is room. */}
+        {/* two ways on, always side by side: start free (the brand-blue button), or first see how it works (a light one
+            with a video mark, leading to the animated walk-through below). On a phone both are compact and share the
+            width; the light one's second line and the arrow come in once there is room. */}
         <div className="appear mt-8 flex items-center gap-2 sm:gap-3 md:mt-10" style={{ "--d": "900ms" } as React.CSSProperties}>
-          <span className="pointer-events-auto min-w-0 flex-1 rounded-full bg-[linear-gradient(120deg,#7cc8ff,#1f4fea_40%,#8b7cff_75%,#f0a8ff)] p-[3px] shadow-[0_0_24px_-4px_rgb(59_130_246/0.55)] sm:flex-none">
-            <a data-cta data-lead="hero" href={APP_URL} className="group flex h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[linear-gradient(180deg,#2b3243,#0f172a)] px-3 text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14)] min-[380px]:text-sm sm:h-[52px] sm:gap-2.5 sm:px-7 sm:text-[15px] md:text-base">
-              {t.start} <ArrowRight className="hidden size-4 shrink-0 transition group-hover:translate-x-0.5 min-[420px]:block" />
-            </a>
-          </span>
+          <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto flex h-[54px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[linear-gradient(180deg,#3d6bff,#1f4fea)] px-3 text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_10px_24px_-8px_rgb(31_79_234/0.55)] transition hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_14px_30px_-8px_rgb(31_79_234/0.7)] min-[380px]:text-sm sm:h-[58px] sm:flex-none sm:gap-2.5 sm:px-8 sm:text-[15px] md:text-base">
+            {t.start} <ArrowRight className="hidden size-4 shrink-0 transition group-hover:translate-x-0.5 min-[420px]:block" />
+          </a>
           <a href="#how" className="group pointer-events-auto flex h-[54px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/90 px-3 ring-1 ring-slate-900/[0.08] shadow-sm shadow-slate-900/5 backdrop-blur transition hover:bg-white hover:ring-slate-900/15 sm:h-[58px] sm:flex-none sm:justify-start sm:gap-3 sm:pl-4 sm:pr-6">
             <span className="hidden size-7 shrink-0 place-items-center rounded-full bg-primary/10 text-primary min-[360px]:grid sm:size-9"><Play className="size-3.5 translate-x-px fill-current sm:size-4" aria-hidden /></span>
             <span className="flex flex-col leading-tight">
