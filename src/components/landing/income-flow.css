@@ -22,7 +22,7 @@
 
 .income-flow .if-track { height: 280vh; }
 .income-flow[data-reduced="true"] .if-track { height: auto; }
-.income-flow .if-stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: clamp(24px, 4.5vh, 56px); padding: clamp(84px, 10vh, 112px) clamp(20px, 3.2vw, 64px) clamp(40px, 6vh, 80px); box-sizing: border-box; overflow: hidden; }
+.income-flow .if-stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: clamp(24px, 4.5vh, 56px); padding: clamp(72px, 8.5vh, 96px) clamp(20px, 3.2vw, 64px) clamp(40px, 6vh, 80px); box-sizing: border-box; overflow: hidden; }
 .income-flow[data-reduced="true"] .if-stage { position: relative; height: auto; }
 .income-flow .if-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(52% 50% at 50% 46%, rgb(191 224 255 / .3), transparent 72%); pointer-events: none; }
 

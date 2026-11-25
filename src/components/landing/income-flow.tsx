@@ -192,8 +192,8 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       raf = 0;
       const rect = track.getBoundingClientRect();
       const vh = innerHeight;
-      // phones: where the shorter stage pins, so it sits mid-screen and clear of the header (CSS uses it below 1024px)
-      const top = `${Math.round(Math.max(72, (vh - stage.offsetHeight) / 2))}px`;
+      // phones: where the shorter stage pins, a little above mid-screen and clear of the header (CSS uses it below 1024px)
+      const top = `${Math.round(Math.max(72, (vh - stage.offsetHeight) * 0.35))}px`;
       if (top !== stageTop) root.style.setProperty("--stage-top", (stageTop = top));
       if (rect.top > vh * 1.5 || rect.bottom < -vh * 0.5) return; // far off screen: nothing to draw
       leadRef.current = clamp((vh - rect.top) / vh);
@@ -234,7 +234,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
         <div className="if-stage">
           <header className="if-head">
             {/* set like the hero's heading, words rising in one by one */}
-            <h2 className="text-balance text-[clamp(1.75rem,4.4vw,4rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
+            <h2 className="text-balance text-[clamp(2.1rem,5.2vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
               <SplitWords text={f.title} />
             </h2>
           </header>
