@@ -2,7 +2,8 @@
    Income workflow: one income fans out to four percentage rules and settles
    into what remains; a swipe changes the income.
    Changes for this page: the story is not driven by scrolling and nothing is pinned. The section is an ordinary
-   block; once it is fully on screen the story plays by itself, slowly, holds its result and plays again (timing in
+   screen-tall block like the hero; once its board is fully on screen the story plays by itself, slowly, holds its
+   result and plays again (timing in
    income-flow.tsx). The heading is set like this page's others (its words rise in); phones keep the wide
    three-column board, shrunk to fit (see the last media block), instead of the site's one-panel-at-a-time strip;
    --line is renamed so the page's own --line token stays intact. */
@@ -18,7 +19,7 @@
 .income-flow .if-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.4vh, 30px); }
 .income-flow[data-reduced="true"] .if-head, .income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
 
-.income-flow .if-stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(24px, 4.5vh, 56px); padding: clamp(64px, 9vh, 104px) clamp(20px, 3.2vw, 64px) clamp(56px, 8vh, 96px); box-sizing: border-box; overflow: hidden; }
+.income-flow .if-stage { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(24px, 4.5vh, 56px); padding: clamp(64px, 9vh, 104px) clamp(20px, 3.2vw, 64px) clamp(56px, 8vh, 96px); box-sizing: border-box; overflow: hidden; }
 .income-flow .if-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(52% 50% at 50% 46%, rgb(191 224 255 / .3), transparent 72%); pointer-events: none; }
 
 /* Everything on the board is sized in em, so it shrinks on short screens. */
@@ -144,7 +145,7 @@
 .income-flow .if-rule-amount em, .income-flow .if-rule-name small, .income-flow .if-income > small, .income-flow .if-legend { letter-spacing: -0.01em; }
 
 @media (max-width: 1023px) {
-  /* phones: a compact block around the shrunk board, short enough to be fully on screen (which starts the story) */
+  /* phones: tighter padding; the section still fills the screen, the shrunk board in its middle */
   .income-flow .if-stage { gap: 16px; padding: 48px 12px 40px; }
   .income-flow .if-head { gap: 8px; padding: 0 8px; }
   .income-flow .if-head p { font-size: clamp(15px, 4.3vw, 19px); }

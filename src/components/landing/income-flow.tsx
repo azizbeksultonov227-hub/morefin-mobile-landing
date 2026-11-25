@@ -25,7 +25,7 @@ const RULES = [
 const REST = 100 - RULES.reduce((sum, rule) => sum + rule.percent, 0);
 const COINS = 7;
 // the story plays slowly, holds its result, then plays again
-const PLAY = 10000;
+const PLAY = 7000;
 const PAUSE = 2500;
 const INCOMES = [12_000_000, 5_000_000, 40_000_000];
 
@@ -168,8 +168,8 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     return () => observer.disconnect();
   }, []);
 
-  // The story is not tied to scrolling. The heading's words rise in as the section comes into view; once the whole
-  // section is on screen the workflow plays by itself, slowly (PLAY), holds the result for PAUSE, and starts again.
+  // The story is not tied to scrolling. The heading's words rise in as the section comes into view; once the board
+  // is wholly on screen the workflow plays by itself, slowly (PLAY), holds the result for PAUSE, and starts again.
   // Leaving the section stops it; coming back fully starts it from the beginning.
   useEffect(() => {
     const root = rootRef.current;
@@ -205,16 +205,21 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       progressRef.current = 0;
       paintRef.current();
     };
-    const io = new IntersectionObserver(([entry]) => {
-      // how much of the section shows, out of all of it (or all of the screen, if it is taller than the screen)
+    // the section fills the screen, so "fully here" means its board (the cards and lines) is wholly on screen;
+    // the heading rises in earlier, as the section comes into view, and the story stops once the section is mostly gone
+    const board = root.querySelector<HTMLElement>(".if-board")!;
+    const steps = { threshold: Array.from({ length: 41 }, (_, i) => i / 40) };
+    const onSection = new IntersectionObserver(([entry]) => {
       const shown = entry.intersectionRect.height / Math.max(1, Math.min(entry.boundingClientRect.height, innerHeight));
       if (shown >= 0.3) head.classList.add("is-in");
-      if (shown >= 0.97) play();
-      else if (shown < 0.5) stop();
-    }, { threshold: Array.from({ length: 41 }, (_, i) => i / 40) });
-    io.observe(root);
+      if (shown < 0.5) stop();
+    }, steps);
+    const onBoard = new IntersectionObserver(([entry]) => { if (entry.intersectionRatio >= 0.99) play(); }, steps);
+    onSection.observe(root);
+    onBoard.observe(board);
     return () => {
-      io.disconnect();
+      onSection.disconnect();
+      onBoard.disconnect();
       cancelAnimationFrame(raf);
       clearTimeout(wait);
     };
