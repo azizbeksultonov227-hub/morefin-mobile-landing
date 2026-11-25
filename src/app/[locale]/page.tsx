@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { AiReceipt } from "@/components/landing/ai-receipt";
+import { AiFlow } from "@/components/landing/ai-flow";
 import { Footer } from "@/components/landing/footer";
 import { Header } from "@/components/landing/header";
 import { Hero } from "@/components/landing/hero";
@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps<"/[locale]">) {
       <main>
         <Hero t={t} />
         <IncomeFlow t={t} locale={locale} start={t.start} />
-        <AiReceipt t={t} />
+        <AiFlow t={t} start={t.start} />
         <More t={t} />
         <section className="relative px-5 py-16 text-center [background:radial-gradient(60%_70%_at_50%_100%,rgb(31_79_234/0.16),transparent)] md:py-28">
           <ScrollWords text={t.ctaTitle} className="relative mx-auto max-w-4xl text-balance text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-[0.95] tracking-[-0.045em]" />

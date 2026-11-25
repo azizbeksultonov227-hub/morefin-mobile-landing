@@ -2,9 +2,10 @@
 
 import { ArrowRight } from "lucide-react";
 import { useReducedMotion } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { SplitWords } from "@/components/split-words";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
+import { drawWire, ease, group, span, useStoryLoop, useWires, type Wire } from "./story";
 import "./income-flow.css";
 
 // A port of the Morefin site's income workflow (src/sections/AppHero.tsx + income-flow.css), with the site's look:
@@ -29,13 +30,13 @@ const PLAY = 7000;
 const PAUSE = 2500;
 const INCOMES = [12_000_000, 5_000_000, 40_000_000];
 
-const group = (value: number) => Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 const percentText = (value: number, locale: string) => String(value).replace(".", locale === "en" ? "." : ",");
-const clamp = (value: number) => Math.min(1, Math.max(0, value));
-const span = (progress: number, from: number, to: number) => clamp((progress - from) / (to - from));
-const ease = (value: number) => 1 - Math.pow(1 - value, 3);
 
-type Wire = { role: "in" | "out"; index: number; from: string; to: string };
+// one connector from the income to each rule, and one from each rule to the result
+const WIRES: Wire[] = [
+  ...RULES.map((rule, index) => ({ role: "in" as const, index, from: ".if-income-node", to: `[data-rule="${rule.key}"]` })),
+  ...RULES.map((rule, index) => ({ role: "out" as const, index, from: `[data-rule="${rule.key}"]`, to: ".if-result" })),
+];
 
 function RuleIcon({ kind }: { kind: (typeof RULES)[number]["key"] }) {
   return (
@@ -64,29 +65,14 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   const progressRef = useRef(0);
   const incomeRef = useRef(INCOMES[0]);
   const [income, setIncome] = useState(0);
-  const [wires, setWires] = useState<Array<Wire & { d: string }>>([]);
 
-  // Paint one frame of the story. Runs on every scroll tick and every income
+  // Paint one frame of the story. Runs on every animation frame and every income
   // change, so it writes to the DOM directly instead of re-rendering React.
   const paint = () => {
     const root = rootRef.current;
     if (!root) return;
     const progress = reduced ? 1 : progressRef.current;
     const amount = incomeRef.current;
-    // Draw a connector up to `value` and ride a pulse on its leading end.
-    const wire = (name: string, value: number) => {
-      const path = root.querySelector<SVGPathElement>(`[data-wire="${name}"]`);
-      const pulse = root.querySelector<SVGCircleElement>(`[data-pulse="${name}"]`);
-      if (!path || !pulse) return;
-      path.style.setProperty("--p", String(value));
-      path.classList.toggle("is-live", value >= 1);
-      const moving = value > 0 && value < 1;
-      pulse.classList.toggle("is-on", moving);
-      if (!moving) return;
-      const point = path.getPointAtLength(path.getTotalLength() * value);
-      pulse.setAttribute("cx", String(point.x));
-      pulse.setAttribute("cy", String(point.y));
-    };
     // Act three opens with the income itself: coins fall into the card and the
     // figure counts up from zero. Only then is it distributed.
     const arrived = span(progress, 0.035, 0.158);
@@ -114,8 +100,8 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       node.classList.toggle("is-on", load >= 1);
       node.style.setProperty("--load", String(load));
       node.querySelector<HTMLElement>(".if-rule-amount b")!.textContent = group(full * count);
-      wire(`in-${index}`, line);
-      wire(`out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
+      drawWire(root, `in-${index}`, line);
+      drawWire(root, `out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
       root.style.setProperty(`--slice-${index}`, String(rule.percent * settle));
       deducted += full;
     });
@@ -128,102 +114,15 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
     root.querySelector<HTMLElement>(".if-stat")!.classList.toggle("is-on", meter > 0);
     root.querySelector<HTMLElement>(".if-stat-value")!.textContent = `${Math.round(95 * meter)}%`;
   };
-  // the scroll listener and the resize observer always call the latest paint
+  // the story's loop and the wires' measuring always call the latest paint
   const paintRef = useRef(paint);
   useLayoutEffect(() => {
     paintRef.current = paint;
     paint();
   });
 
-  // The connectors are measured from the cards themselves, so they follow the board at any size.
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const board = root.querySelector<HTMLElement>(".if-board")!;
-    const measure = () => {
-      const frame = board.getBoundingClientRect();
-      const box = (selector: string) => {
-        const rect = board.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-        return { left: rect.left - frame.left, right: rect.right - frame.left, top: rect.top - frame.top, bottom: rect.bottom - frame.top, cy: rect.top - frame.top + rect.height / 2 };
-      };
-      const list: Wire[] = [
-        ...RULES.map((rule, index) => ({ role: "in" as const, index, from: ".if-income-node", to: `[data-rule="${rule.key}"]` })),
-        ...RULES.map((rule, index) => ({ role: "out" as const, index, from: `[data-rule="${rule.key}"]`, to: ".if-result" })),
-      ];
-      setWires(list.map((w) => {
-        const a = box(w.from), b = box(w.to);
-        // Fan lines leave and arrive spread along the card's edge, not from one point.
-        const spread = (w.index - (RULES.length - 1) / 2) * Math.min(14, (w.role === "in" ? a.bottom - a.top : b.bottom - b.top) / 9);
-        const ay = w.role === "in" ? a.cy + spread : a.cy;
-        const by = w.role === "out" ? b.cy + spread : b.cy;
-        const bend = (b.left - a.right) / 2;
-        return { ...w, d: `M${a.right} ${ay} C${a.right + bend} ${ay} ${b.left - bend} ${by} ${b.left} ${by}` };
-      }));
-      paintRef.current();
-    };
-    // a ResizeObserver reports once right away, then on every size change
-    const observer = new ResizeObserver(measure);
-    observer.observe(board);
-    document.fonts?.ready.then(measure);
-    return () => observer.disconnect();
-  }, []);
-
-  // The story is not tied to scrolling. The heading's words rise in as the section comes into view; once the board
-  // is wholly on screen the workflow plays by itself, slowly (PLAY), holds the result for PAUSE, and starts again.
-  // Leaving the section stops it; coming back fully starts it from the beginning.
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-    const head = root.querySelector<HTMLElement>(".if-head")!;
-    if (reduced) {
-      head.classList.add("is-in");
-      paintRef.current();
-      return;
-    }
-    let raf = 0;
-    let wait = 0;
-    let begun = 0;
-    let playing = false;
-    const frame = (now: number) => {
-      if (!begun) begun = now;
-      progressRef.current = clamp((now - begun) / PLAY);
-      paintRef.current();
-      if (progressRef.current < 1) raf = requestAnimationFrame(frame);
-      else wait = window.setTimeout(() => { begun = 0; raf = requestAnimationFrame(frame); }, PAUSE);
-    };
-    const play = () => {
-      if (playing) return;
-      playing = true;
-      begun = 0;
-      raf = requestAnimationFrame(frame);
-    };
-    const stop = () => {
-      if (!playing) return;
-      playing = false;
-      cancelAnimationFrame(raf);
-      clearTimeout(wait);
-      progressRef.current = 0;
-      paintRef.current();
-    };
-    // the section fills the screen, so "fully here" means its board (the cards and lines) is wholly on screen;
-    // the heading rises in earlier, as the section comes into view, and the story stops once the section is mostly gone
-    const board = root.querySelector<HTMLElement>(".if-board")!;
-    const steps = { threshold: Array.from({ length: 41 }, (_, i) => i / 40) };
-    const onSection = new IntersectionObserver(([entry]) => {
-      const shown = entry.intersectionRect.height / Math.max(1, Math.min(entry.boundingClientRect.height, innerHeight));
-      if (shown >= 0.3) head.classList.add("is-in");
-      if (shown < 0.5) stop();
-    }, steps);
-    const onBoard = new IntersectionObserver(([entry]) => { if (entry.intersectionRatio >= 0.99) play(); }, steps);
-    onSection.observe(root);
-    onBoard.observe(board);
-    return () => {
-      onSection.disconnect();
-      onBoard.disconnect();
-      cancelAnimationFrame(raf);
-      clearTimeout(wait);
-    };
-  }, [reduced]);
+  const wires = useWires(rootRef, WIRES, RULES.length, paintRef);
+  useStoryLoop(rootRef, progressRef, paintRef, reduced, PLAY, PAUSE);
 
   const choose = (next: number) => {
     const index = (next + INCOMES.length) % INCOMES.length;

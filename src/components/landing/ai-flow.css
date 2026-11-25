@@ -1,0 +1,92 @@
+/* How Morefin AI works. The section is built on the income flow's board (income-flow.css: stage, heading, three
+   columns, connectors, cards that load, the result card that turns navy), so both stories read as one design and
+   shrink the same way on phones. This file gives it the page's light look, so the two stories alternate with the
+   blue, and adds its own cards: the photographed receipt (1) and the proposal you confirm (3). Every rule starts with
+   .income-flow.ai-flow, one class more than the board's own, so it wins over them; a state the board styles at the
+   same weight (.is-on, .is-loading) is restated here for the same reason. */
+.income-flow.ai-flow { background: var(--bg); color: var(--fg); }
+.income-flow.ai-flow .if-stage::before { background: radial-gradient(55% 50% at 50% 56%, rgb(44 152 230 / .13), transparent 72%); }
+
+.income-flow.ai-flow .if-step { color: #1E293B; }
+.income-flow.ai-flow .if-step i { background: rgb(31 79 234 / .1); color: var(--primary); box-shadow: none; }
+/* the official star beside "Morefin AI" */
+.income-flow.ai-flow .ai-star { width: 1.45em; height: 1.45em; margin: 0 -.25em 0 -.1em; }
+
+/* connectors in their field's own colour, which reads on the light page as it is */
+.income-flow.ai-flow .if-wires path { stroke: var(--tone); stroke-width: 2.2; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--tone) 45%, transparent)); }
+.income-flow.ai-flow .if-wires circle { fill: #fff; stroke: var(--tone); stroke-width: 2; filter: drop-shadow(0 0 6px var(--tone)); }
+
+/* cards: white with a soft shadow; ones still waiting are a faint tint */
+.income-flow.ai-flow .if-node { box-shadow: 0 1.4em 3em -1.6em rgb(10 37 64 / .32); }
+.income-flow.ai-flow .if-rule { background: rgb(15 42 71 / .045); color: #334155; box-shadow: none; }
+.income-flow.ai-flow .if-rule-icon { background: rgb(15 42 71 / .06); color: #64748B; }
+.income-flow.ai-flow .if-rule.is-loading { color: var(--ink); }
+.income-flow.ai-flow .if-rule.is-on { background: #fff; color: var(--ink); box-shadow: 0 1.2em 2.6em -1.4em rgb(10 37 64 / .3); }
+
+/* 1 - the receipt, photographed: a status line over the paper, a scan line inside the camera's frame */
+.income-flow.ai-flow .ai-photo { padding: 1.15em 1.2em 1.35em; }
+.income-flow.ai-flow .ai-photo.is-on { animation: ai-shot .65s ease-out; }
+@keyframes ai-shot { from { box-shadow: 0 0 0 0 rgb(44 152 230 / .5), 0 1.4em 3em -1.6em rgb(10 37 64 / .32); } to { box-shadow: 0 0 0 1.2em rgb(44 152 230 / 0), 0 1.4em 3em -1.6em rgb(10 37 64 / .32); } }
+.income-flow.ai-flow .ai-photo-status { display: inline-flex; align-items: center; gap: .5em; font-size: .86em; font-weight: 600; letter-spacing: -.025em; color: #8594A6; white-space: nowrap; }
+.income-flow.ai-flow .ai-photo-status i { width: .55em; height: .55em; border-radius: 50%; background: #B6C2D0; transition: background-color .25s ease-out, box-shadow .25s ease-out; }
+.income-flow.ai-flow .ai-photo.is-scanning .ai-photo-status i { background: #2C98E6; animation: ai-blink .7s ease-in-out infinite; }
+@keyframes ai-blink { 50% { opacity: .3; } }
+.income-flow.ai-flow .ai-photo.is-on .ai-photo-status { color: #12805A; }
+.income-flow.ai-flow .ai-photo.is-on .ai-photo-status i { background: #16A36A; box-shadow: 0 0 0 .25em rgb(22 163 106 / .2); }
+.income-flow.ai-flow .ai-when-on, .income-flow.ai-flow .ai-photo.is-on .ai-when-off { display: none; }
+.income-flow.ai-flow .ai-photo.is-on .ai-when-on { display: inline; }
+
+.income-flow.ai-flow .ai-paper { position: relative; margin: 1em .4em 0; padding: .85em .9em 1em; border-radius: .35em; background: #fff; box-shadow: 0 0 0 1px #E6EBF2, 0 .6em 1.2em -.7em rgb(15 42 71 / .3); font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78em; line-height: 1.35; letter-spacing: 0; color: #334155; transform: rotate(-1.6deg); }
+.income-flow.ai-flow .ai-paper p { display: flex; justify-content: space-between; gap: 1em; margin: .28em 0; white-space: nowrap; }
+.income-flow.ai-flow .ai-paper .ai-paper-title { justify-content: center; font-weight: 700; letter-spacing: .1em; color: var(--ink); }
+.income-flow.ai-flow .ai-paper hr { margin: .55em 0; border: 0; border-top: 1px dashed #CBD5E1; }
+/* the total is what the amount is read from: it is marked as the amount card loads */
+.income-flow.ai-flow .ai-paper-total { margin: .2em -.35em 0; padding: .2em .35em; border-radius: .3em; font-weight: 700; color: var(--ink); transition: background-color .3s ease-out, box-shadow .3s ease-out; }
+.income-flow.ai-flow .ai-paper-total.is-read { background: rgb(44 152 230 / .12); box-shadow: inset 0 0 0 1px rgb(44 152 230 / .55); }
+.income-flow.ai-flow .ai-scan { position: absolute; left: -.5em; right: -.5em; top: calc(var(--scan, 0) * 100%); height: 2px; margin-top: -1px; background: #2C98E6; box-shadow: 0 0 .7em .15em rgb(44 152 230 / .55); opacity: 0; pointer-events: none; }
+.income-flow.ai-flow .ai-scan::before { content: ""; position: absolute; left: .5em; right: .5em; bottom: 2px; height: min(2.6em, calc(var(--scan, 0) * 10em)); background: linear-gradient(to top, rgb(44 152 230 / .2), transparent); }
+.income-flow.ai-flow .ai-photo.is-scanning .ai-scan { opacity: 1; }
+.income-flow.ai-flow .ai-frame { position: absolute; inset: -.55em -.6em; pointer-events: none; transition: opacity .3s ease-out; }
+.income-flow.ai-flow .ai-photo.is-on .ai-frame { opacity: 0; }
+.income-flow.ai-flow .ai-frame i { position: absolute; width: 1em; height: 1em; border: 0 solid #2C98E6; }
+.income-flow.ai-flow .ai-frame i:nth-child(1) { left: 0; top: 0; border-width: 2px 0 0 2px; border-top-left-radius: .35em; }
+.income-flow.ai-flow .ai-frame i:nth-child(2) { right: 0; top: 0; border-width: 2px 2px 0 0; border-top-right-radius: .35em; }
+.income-flow.ai-flow .ai-frame i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 2px 2px; border-bottom-left-radius: .35em; }
+.income-flow.ai-flow .ai-frame i:nth-child(4) { right: 0; bottom: 0; border-width: 0 2px 2px 0; border-bottom-right-radius: .35em; }
+
+/* 3 - the proposal: a faint card while it waits, navy once it arrives; its button is pressed, then the updates */
+.income-flow.ai-flow .if-result { background: rgb(15 42 71 / .045); color: #64748B; box-shadow: none; }
+.income-flow.ai-flow .if-result.is-on { background: linear-gradient(160deg, #143A66 0%, #0A2540 100%); color: #fff; box-shadow: 0 1.6em 3.4em -1.6em rgb(10 37 64 / .6); }
+.income-flow.ai-flow .if-result:not(.is-on) .if-result-amount span { color: inherit; }
+.income-flow.ai-flow .ai-result-meta { font-size: .8em; letter-spacing: -.01em; color: rgb(255 255 255 / .72); white-space: nowrap; opacity: 0; transition: opacity .25s ease-out; }
+.income-flow.ai-flow .if-result.is-on .ai-result-meta { opacity: 1; }
+.income-flow.ai-flow .ai-confirm { position: relative; display: grid; place-items: center; height: 2.6em; margin-top: .2em; border-radius: 999px; overflow: hidden; background: rgb(15 42 71 / .06); color: #94A3B8; font-size: .86em; font-weight: 600; letter-spacing: -.02em; transition: background-color .25s ease-out, color .25s ease-out; }
+.income-flow.ai-flow .if-result.is-on .ai-confirm { background: #fff; color: var(--ink); }
+.income-flow.ai-flow .if-result.is-pressed .ai-confirm { background: linear-gradient(180deg, #3d6bff, #1f4fea); color: #fff; animation: ai-press .4s ease-out; }
+@keyframes ai-press { 35% { transform: scale(.95); } }
+.income-flow.ai-flow .ai-confirm > span { grid-area: 1 / 1; display: inline-flex; align-items: center; gap: .35em; white-space: nowrap; transition: opacity .2s ease-out, transform .2s ease-out; }
+.income-flow.ai-flow .ai-confirm-on { opacity: 0; transform: translateY(.5em); }
+.income-flow.ai-flow .if-result.is-pressed .ai-confirm-off { opacity: 0; transform: translateY(-.5em); }
+.income-flow.ai-flow .if-result.is-pressed .ai-confirm-on { opacity: 1; transform: none; }
+/* the tap itself: a ring spreading from the middle of the button */
+.income-flow.ai-flow .ai-tap { position: absolute; left: 50%; top: 50%; width: 2.4em; height: 2.4em; margin: -1.2em 0 0 -1.2em; border-radius: 50%; background: rgb(255 255 255 / .6); opacity: 0; pointer-events: none; }
+.income-flow.ai-flow .if-result.is-pressed .ai-tap { animation: ai-tap .6s ease-out; }
+@keyframes ai-tap { from { opacity: .9; transform: scale(.3); } to { opacity: 0; transform: scale(3); } }
+.income-flow.ai-flow .ai-updates { display: flex; flex-direction: column; gap: .4em; margin: .35em 0 0; padding: 0; list-style: none; font-size: .8em; letter-spacing: -.01em; }
+.income-flow.ai-flow .ai-updates li { display: flex; align-items: center; gap: .45em; color: rgb(255 255 255 / .9); white-space: nowrap; opacity: 0; transform: translateY(.3em); transition: opacity .25s ease-out, transform .25s ease-out; }
+.income-flow.ai-flow .ai-updates li.is-on { opacity: 1; transform: none; }
+.income-flow.ai-flow .ai-updates svg { color: #7FE3B4; }
+.income-flow.ai-flow .ai-confirm svg, .income-flow.ai-flow .ai-updates svg { flex: none; width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the start button in the page's brand blue (the board's own is a white pill, for the blue section) */
+.income-flow.ai-flow .if-button { background: linear-gradient(180deg, #3d6bff, #1f4fea); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / .14), 0 10px 24px -8px rgb(31 79 234 / .55); }
+.income-flow.ai-flow .if-button:hover { box-shadow: inset 0 1px 0 rgb(255 255 255 / .14), 0 14px 30px -8px rgb(31 79 234 / .7); }
+
+@media (max-width: 1023px) {
+  /* thinner lines on the shrunk board, as in the blue section */
+  .income-flow.ai-flow .if-wires path { stroke-width: 1.4; filter: drop-shadow(0 0 2px color-mix(in srgb, var(--tone) 45%, transparent)); }
+  .income-flow.ai-flow .if-wires circle { stroke-width: 1.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .income-flow.ai-flow * { animation: none !important; }
+}
