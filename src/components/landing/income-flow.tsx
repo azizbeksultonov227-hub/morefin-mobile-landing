@@ -228,7 +228,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   };
 
   return (
-    <section ref={rootRef} className="income-flow" data-reduced={reduced}>
+    <section ref={rootRef} id="how" className="income-flow" data-reduced={reduced}>
       {/* the page's sticky start button steps aside while this pinned stage fills the screen */}
       <div className="if-track" data-no-sticky>
         <div className="if-stage">

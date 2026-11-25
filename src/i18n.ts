@@ -25,6 +25,7 @@ const uz = {
   start: "Bepul sinab ko‘rish",
   h1a: "Biznes moliyasini xatosiz yuritadigan",
   h1b: "AI xodimingiz",
+  learn: { title: "Batafsil ma’lumot", sub: "Qanday ishlashini ko‘ring" },
   // the hero's rotating line: one Morefin AI "employee" at a time, the job it is doing right now
   agents: [
     { role: "Hisobchi", text: "sof foydani hisoblayapti" },
@@ -97,6 +98,7 @@ const ru: Dict = {
   start: "Попробовать бесплатно",
   h1a: "Финансы бизнеса без ошибок ведёт",
   h1b: "ваш AI-сотрудник",
+  learn: { title: "Подробнее", sub: "Посмотрите, как это работает" },
   agents: [
     { role: "Бухгалтер", text: "считает чистую прибыль" },
     { role: "Чек-ридер", text: "заносит чек покупки в расходы" },
@@ -166,6 +168,7 @@ const en: Dict = {
   start: "Try it free",
   h1a: "Business finances without mistakes,",
   h1b: "kept by your AI employee",
+  learn: { title: "Learn more", sub: "See how it works" },
   agents: [
     { role: "Accountant", text: "is working out the net profit" },
     { role: "Receipt reader", text: "is filing a purchase receipt as an expense" },
