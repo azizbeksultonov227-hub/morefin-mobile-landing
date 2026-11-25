@@ -16,7 +16,7 @@
 /* now and then each one blinks; the one at work also bobs very slightly */
 .agents-eyes { transform-box: fill-box; transform-origin: center; animation: agents-blink 4.2s var(--blink, 0s) infinite; }
 @keyframes agents-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.12); } }
-.agents-char.is-on svg { animation: agents-bob 2.6s ease-in-out infinite; }
+.agents-char.is-on svg { animation: agents-bob 3s ease-in-out infinite; }
 @keyframes agents-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.12em); } }
 
 .agents-line { margin: .75em 0 0; max-width: 26em; font-size: 1em; line-height: 1.35; letter-spacing: -0.01em; color: var(--muted); animation: agents-in .55s cubic-bezier(.22, 1, .36, 1) both; }

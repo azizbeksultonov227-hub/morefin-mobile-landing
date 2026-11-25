@@ -21,7 +21,8 @@ const SLOTS: Record<number, { x: number; s: number }> = {
   [-3]: { x: -7.8, s: 0.2 }, [-2]: { x: -6.05, s: 0.4 }, [-1]: { x: -3.6, s: 0.58 }, 0: { x: 0, s: 1 },
   1: { x: 3.6, s: 0.58 }, 2: { x: 6.05, s: 0.4 }, 3: { x: 7.8, s: 0.2 },
 };
-const EVERY = 2600;
+// long enough for a slow reader to take in the line before the next one comes
+const EVERY = 4500;
 
 export function Agents({ items }: { items: { role: string; text: string }[] }) {
   const [active, setActive] = useState(0);
