@@ -6,7 +6,9 @@ export const isLocale = (v: unknown): v is Locale => LOCALES.includes(v as Local
 export const SITE_URL = "https://morefin.uz";
 export const APP_URL = "https://app.morefin.uz/";
 export const pageUrl = (l: Locale) => (l === "uz" ? `${SITE_URL}/` : `${SITE_URL}/${l}`);
-export const path = (l: Locale) => (l === "uz" ? "/" : `/${l}`);
+// where the site is served from: "" normally, "/<repo>" in the GitHub Pages preview (next.config sets it)
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+export const path = (l: Locale) => `${BASE}${l === "uz" ? "/" : `/${l}`}`;
 
 // countries whose people mostly read Russian; Uzbekistan and unknown stay Uzbek, the rest get English
 const RU = new Set(["RU", "KZ", "KG", "TJ", "BY", "TM", "AZ", "AM", "MD"]);

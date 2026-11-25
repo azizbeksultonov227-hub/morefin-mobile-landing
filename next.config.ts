@@ -9,12 +9,22 @@ const SECURITY_HEADERS = [
   { key: "Strict-Transport-Security", value: "max-age=31536000" },
 ];
 
+// GITHUB_PAGES=true builds the phone preview for GitHub Pages (see .github/workflows/pages.yml): plain static files
+// under /<repo>, so no server features (no image optimiser, no response headers); the real site stays a standalone server
+const PAGES = process.env.GITHUB_PAGES === "true";
+const BASE = PAGES ? "/morefin-mobile-landing" : "";
+
 const nextConfig: NextConfig = {
-  output: "standalone",
+  ...(PAGES
+    ? { output: "export", basePath: BASE, trailingSlash: true, images: { unoptimized: true } }
+    : {
+        output: "standalone",
+        async headers() {
+          return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+        },
+      }),
+  env: { NEXT_PUBLIC_BASE_PATH: BASE },
   poweredByHeader: false,
-  async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
-  },
   devIndicators: false,
   // dev only: lets a phone on the same Wi-Fi/hotspot open http://<mac-ip>:3500 with scripts working
   allowedDevOrigins: ["192.168.*.*", "172.*.*.*", "10.*.*.*", "*.local"],
