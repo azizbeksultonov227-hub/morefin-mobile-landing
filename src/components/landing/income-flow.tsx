@@ -51,7 +51,7 @@ function RuleIcon({ kind }: { kind: (typeof RULES)[number]["key"] }) {
 
 function Start({ label, lead }: { label: string; lead: string }) {
   return (
-    <a data-cta data-lead={lead} href={APP_URL} className="if-button">
+    <a data-lead={lead} href={APP_URL} className="if-button">
       {label} <ArrowRight aria-hidden />
     </a>
   );
@@ -142,8 +142,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
 
   return (
     <section ref={rootRef} id="how" className="income-flow" data-reduced={reduced}>
-      {/* the page's sticky start button steps aside while this section, which has its own button, is on screen */}
-      <div className="if-track" data-no-sticky>
+      <div className="if-track">
         <div className="if-stage">
           <header className="if-head">
             {/* set like the hero's heading, words rising in one by one */}

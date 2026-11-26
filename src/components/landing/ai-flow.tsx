@@ -104,8 +104,7 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
 
   return (
     <section ref={rootRef} id="ai" className="income-flow ai-flow" data-reduced={reduced}>
-      {/* the page's sticky start button steps aside while this section, which has its own button, is on screen */}
-      <div className="if-track" data-no-sticky>
+      <div className="if-track">
         <div className="if-stage">
           <header className="if-head">
             <h2 className="text-balance text-[clamp(2.1rem,5.2vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.045em]">
@@ -178,7 +177,7 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
             </div>
 
             <div className="if-cta">
-              <a data-cta data-lead="ai" href={APP_URL} className="if-button">
+              <a data-lead="ai" href={APP_URL} className="if-button">
                 {start} <ArrowRight aria-hidden />
               </a>
             </div>
