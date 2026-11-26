@@ -81,13 +81,6 @@ const uz = {
     always: ["Uxlamaydi", "Kechikmaydi", "Charchamaydi"],
   },
 
-  moreTitle: "Hammasi bir joyda.",
-  more: [
-    { tag: "Qarzdorlar", text: "Sizdan kimlarning qarzi bor, siz kimlardan qarzsiz — hammasi bitta ekranda. To‘lov kuni kelsa, kimga qancha to‘lash kerakligi tayyor." },
-    { tag: "Reja", text: "Sotuv va xarajat planini qo‘yasiz — Morefin necha foiz bajarilganini va nolga chiqish nuqtasini o‘zi hisoblaydi." },
-    { tag: "Hisobot", text: "Kirim, chiqim va foyda oyma-oy. Biznesingiz qaysi tomonga ketayotganini bir qarashda ko‘rasiz." },
-  ],
-
   ctaTitle: "Moliyani xatosiz boshqaring.",
   ctaText: "Morefin AI bilan moliyangizni avtomatlashtiring.",
 };
@@ -159,13 +152,6 @@ const ru: Dict = {
     always: ["Не спит", "Не опаздывает", "Не устаёт"],
   },
 
-  moreTitle: "Всё в одном месте.",
-  more: [
-    { tag: "Долги", text: "Кто должен вам и кому должны вы — на одном экране. Настал день платежа — кому и сколько платить, уже готово." },
-    { tag: "План", text: "Ставите план продаж и расходов — Morefin сам считает процент выполнения и точку безубыточности." },
-    { tag: "Отчёт", text: "Доходы, расходы и прибыль по месяцам. С одного взгляда видно, куда движется бизнес." },
-  ],
-
   ctaTitle: "Управляйте финансами без ошибок.",
   ctaText: "Автоматизируйте финансы с Morefin AI.",
 };
@@ -234,13 +220,6 @@ const en: Dict = {
     done: "Fully done",
     always: ["Never sleeps", "Never late", "Never tired"],
   },
-
-  moreTitle: "Everything in one place.",
-  more: [
-    { tag: "Debts", text: "Who owes you and whom you owe — on one screen. When a payment is due, whom to pay and how much is ready." },
-    { tag: "Plan", text: "Set a sales and an expense plan — Morefin works out the progress and the break-even point by itself." },
-    { tag: "Reports", text: "Income, expenses and profit month by month. See where your business is heading at a glance." },
-  ],
 
   ctaTitle: "Manage your finances without mistakes.",
   ctaText: "Automate your finances with Morefin AI.",
