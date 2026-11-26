@@ -76,16 +76,3 @@ function LangMenu({ locale }: { locale: Locale }) {
     </div>
   );
 }
-
-// one segmented pill: a quiet track, the current language on a raised white thumb
-export function Langs({ locale }: { locale: Locale }) {
-  return (
-    <span className="flex h-9 items-center rounded-full bg-fg/[0.06] p-1">
-      {LOCALES.map((l) => (
-        <a key={l} href={path(l)} hrefLang={l} lang={l} aria-label={NAMES[l]} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`relative flex h-7 min-w-11 items-center justify-center rounded-full px-2 after:absolute after:inset-x-0 after:-inset-y-2 text-xs font-semibold uppercase tracking-wide transition ${l === locale ? "bg-card text-fg shadow-sm shadow-slate-900/10" : "text-muted hover:text-fg"}`}>
-          {l}
-        </a>
-      ))}
-    </span>
-  );
-}

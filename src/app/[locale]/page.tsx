@@ -18,7 +18,7 @@ export default async function Page({ params }: PageProps<"/[locale]">) {
         <IncomeFlow t={t} locale={locale} start={t.start} />
         <AiFlow t={t} locale={locale} start={t.start} />
       </main>
-      <Footer locale={locale} signIn={t.signIn} />
+      <Footer />
     </>
   );
 }

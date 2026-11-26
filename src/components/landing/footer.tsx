@@ -3,15 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { LOGO } from "@/components/mark";
-import { APP_URL, type Locale } from "@/i18n";
-import { Langs } from "./header";
 
 // the pixel wordmark is only fetched once the footer comes near
 const ParticleText = dynamic(() => import("@/components/rb/particle-text"), { ssr: false });
 
-// the logo is made of pixels (like its own pixel "fin"): the pointer scatters them, a click bursts them, they always come back;
-// on a phone they rest once gathered (a drift of half a pixel nobody sees there would keep the canvas redrawing every frame)
-export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
+// The page ends on the logo alone (language and "log in" live in the top bar). It is made of pixels (like its own
+// pixel "fin"): the pointer scatters them, a click bursts them, they always come back; on a phone they rest once
+// gathered (a drift of half a pixel nobody sees there would keep the canvas redrawing every frame)
+export function Footer() {
   const ref = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
   useEffect(() => {
@@ -27,11 +26,6 @@ export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
   const wide = near && matchMedia("(min-width: 768px)").matches;
   return (
     <footer className="overflow-hidden border-t border-line">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 pt-8 text-sm text-muted md:px-10">
-        <Langs locale={locale} />
-        <a href={APP_URL} className="relative transition after:absolute after:-inset-x-2 after:-inset-y-3 hover:text-fg">{signIn}</a>
-        <span>© 2026 Morefin</span>
-      </div>
       <div ref={ref} className="h-[clamp(150px,27vw,420px)] text-primary">
         {near && (
           <ParticleText
