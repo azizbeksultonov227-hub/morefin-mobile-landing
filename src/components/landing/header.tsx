@@ -66,7 +66,7 @@ function LangMenu({ locale }: { locale: Locale }) {
       {open && (
         <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-line bg-card p-1 shadow-lg shadow-slate-900/10">
           {LOCALES.map((l) => (
-            <a key={l} href={path(l)} hrefLang={l} lang={l} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm transition hover:bg-fg/5 ${l === locale ? "font-semibold text-fg" : "text-fg/80"}`}>
+            <a key={l} href={path(l)} hrefLang={l} lang={l} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`flex min-h-11 items-center justify-between rounded-lg px-3 text-sm transition hover:bg-fg/5 ${l === locale ? "font-semibold text-fg" : "text-fg/80"}`}>
               {DICT[l].name}
               {l === locale ? <Check className="size-4 text-primary" aria-hidden /> : <span className="text-xs uppercase text-muted">{l}</span>}
             </a>
