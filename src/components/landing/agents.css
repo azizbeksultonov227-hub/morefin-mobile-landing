@@ -5,6 +5,8 @@
 @media (min-width: 768px) { .agents { font-size: 20px; } }
 
 .agents-row { position: relative; width: 13.7em; height: 3.9em; } /* as wide as the five visible places, so the first lines up with the heading */
+/* phones and tablets centre the hero, and the row with it: the one at work stands in the middle of the screen */
+@media (max-width: 767px) { .agents-row { margin-inline: auto; } .agents-line { margin-inline: auto; } }
 .agents-char {
   position: absolute; left: 50%; bottom: 0; width: 3.9em; height: 3.9em; margin-left: -1.95em;
   transform-origin: 50% 100%;

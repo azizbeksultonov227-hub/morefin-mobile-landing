@@ -23,8 +23,9 @@ export function Hero({ t }: { t: Dict }) {
       )}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] [background:radial-gradient(55%_60%_at_50%_0%,rgb(31_79_234/0.18),transparent)]" />
 
-      {/* centred a little above the middle of the screen (more room below than above) */}
-      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-20 md:px-10 md:pb-32 md:pt-24">
+      {/* centred a little above the middle of the screen (more room below than above); on phones and tablets also
+          centred across, like the page's other screens, so the AI employee at work stands in the middle */}
+      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-20 max-md:items-center max-md:text-center md:px-10 md:pb-32 md:pt-24">
         {/* what Morefin's AI employees are busy with, one at a time */}
         <div className="appear mb-7 md:mb-10">
           <Agents items={t.agents} />
@@ -37,7 +38,7 @@ export function Hero({ t }: { t: Dict }) {
         {/* two ways on, always side by side: start free (the brand-blue button), or first see how it works (a light one
             with a video mark, leading to the animated walk-through below). On a phone both are compact and share the
             width; the light one's second line and the arrow come in once there is room. */}
-        <div className="appear mt-8 flex items-center gap-2 sm:gap-3 md:mt-10" style={{ "--d": "900ms" } as React.CSSProperties}>
+        <div className="appear mt-8 flex items-center gap-2 max-md:w-full max-md:justify-center sm:gap-3 md:mt-10" style={{ "--d": "900ms" } as React.CSSProperties}>
           <a data-cta data-lead="hero" href={APP_URL} className="group pointer-events-auto flex h-[54px] min-w-0 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[linear-gradient(180deg,#3d6bff,#1f4fea)] px-3 text-[13px] font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_10px_24px_-8px_rgb(31_79_234/0.55)] transition hover:shadow-[inset_0_1px_0_rgb(255_255_255/0.14),0_14px_30px_-8px_rgb(31_79_234/0.7)] min-[380px]:text-sm sm:h-[58px] sm:flex-none sm:gap-2.5 sm:px-8 sm:text-[15px] md:text-base">
             {t.start} <ArrowRight className="hidden size-4 shrink-0 transition group-hover:translate-x-0.5 min-[420px]:block" />
           </a>

@@ -41,7 +41,9 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   return (
-    <html lang={locale} className={`${geist.variable} ${mono.variable}`}>
+    // phone browsers add their own attributes to <html> before the page loads (Chrome on iOS adds a frame token),
+    // which is not a mismatch of ours
+    <html lang={locale} className={`${geist.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <MotionProvider>
           <SmoothScroll>{children}</SmoothScroll>
