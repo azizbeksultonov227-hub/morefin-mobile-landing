@@ -33,6 +33,8 @@
 
 
 html { background: var(--bg); color: var(--fg); }
+/* the "how it works" link glides down on a phone too (Lenis does it with a mouse) */
+@media (prefers-reduced-motion: no-preference) { html:not(.lenis) { scroll-behavior: smooth; } }
 body { -webkit-tap-highlight-color: rgb(31 79 234 / 0.12); font-family: var(--font-sans), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 
 /* entrance on first paint, no JS needed: words rise out of blur, blocks fade up */

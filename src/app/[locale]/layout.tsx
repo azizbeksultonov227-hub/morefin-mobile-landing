@@ -43,7 +43,8 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
     // which is not a mismatch of ours
     <html lang={locale} className={geist.variable} suppressHydrationWarning>
       <body>
-        <SmoothScroll>{children}</SmoothScroll>
+        {children}
+        <SmoothScroll />
         <Pixels />
       </body>
     </html>
