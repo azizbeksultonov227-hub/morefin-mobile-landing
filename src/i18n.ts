@@ -80,9 +80,6 @@ const uz = {
     done: "To‘liq bajarildi",
     always: ["Uxlamaydi", "Kechikmaydi", "Charchamaydi"],
   },
-
-  ctaTitle: "Moliyani xatosiz boshqaring.",
-  ctaText: "Morefin AI bilan moliyangizni avtomatlashtiring.",
 };
 
 export type Dict = typeof uz;
@@ -151,9 +148,6 @@ const ru: Dict = {
     done: "Сделано полностью",
     always: ["Не спит", "Не опаздывает", "Не устаёт"],
   },
-
-  ctaTitle: "Управляйте финансами без ошибок.",
-  ctaText: "Автоматизируйте финансы с Morefin AI.",
 };
 
 const en: Dict = {
@@ -220,9 +214,6 @@ const en: Dict = {
     done: "Fully done",
     always: ["Never sleeps", "Never late", "Never tired"],
   },
-
-  ctaTitle: "Manage your finances without mistakes.",
-  ctaText: "Automate your finances with Morefin AI.",
 };
 
 export const DICT: Record<Locale, Dict> = { uz, ru, en };
