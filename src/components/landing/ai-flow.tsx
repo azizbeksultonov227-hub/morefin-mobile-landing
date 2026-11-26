@@ -6,7 +6,7 @@ import { MorefinMark } from "@/components/mark";
 import { SplitWords } from "@/components/split-words";
 import { useMedia } from "@/components/use-media";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
-import { drawWire, ease, span, useStoryLoop, useWires, type Wire } from "./story";
+import { createPainter, drawWire, ease, span, useStoryLoop, useWires, type Painter, type Wire } from "./story";
 import "./income-flow.css";
 import "./ai-flow.css";
 
@@ -57,40 +57,44 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
   const rootRef = useRef<HTMLElement>(null);
   // how far the story has played, 0 to 1 (driven by time once the board is fully on screen, not by scrolling)
   const progressRef = useRef(0);
+  const painterRef = useRef<Painter | null>(null);
 
-  // Paint one frame of the story; it runs every animation frame, so it writes to the DOM directly.
+  // Paint one frame of the story; it runs every animation frame, so it writes to the page directly (and only what
+  // changed, through the painter).
   const paint = () => {
     const root = rootRef.current;
     if (!root) return;
+    const p = (painterRef.current ??= createPainter(root));
+    const wire = (name: string) => wires.find((w) => w.name === name);
     const progress = reduced ? 1 : progressRef.current;
 
     // 1. The business's money comes in, one line after another.
-    root.querySelectorAll(".ai-feed li").forEach((row, index) => row.classList.toggle("is-in", progress >= 0.03 + index * 0.035));
+    p.all(".ai-feed li").forEach((row, index) => p.toggle(row, "is-in", progress >= 0.03 + index * 0.035));
 
     // 2. Morefin AI does each job: its line arrives, the card loads from left to right, then it is ticked.
     JOBS.forEach((job, index) => {
       const begin = 0.19 + index * 0.1;
       const load = span(progress, begin + 0.07, begin + 0.13);
-      const node = root.querySelector<HTMLElement>(`[data-job="${job.key}"]`)!;
-      node.classList.toggle("is-loading", load > 0 && load < 1);
-      node.classList.toggle("is-on", load >= 1);
-      node.style.setProperty("--load", String(load));
-      drawWire(root, `in-${index}`, span(progress, begin, begin + 0.07));
-      drawWire(root, `out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
+      const node = p.one(`[data-job="${job.key}"]`);
+      p.toggle(node, "is-loading", load > 0 && load < 1);
+      p.toggle(node, "is-on", load >= 1);
+      p.style(node, "--load", String(load));
+      drawWire(p, wire(`in-${index}`), span(progress, begin, begin + 0.07));
+      drawWire(p, wire(`out-${index}`), span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
     });
 
     // 3. The financier's job fills up: a quarter for each job, counted up to 100%. The bar's four parts grow by
     //    fractions of its free space (together at most 1), so the empty part is simply the bar showing through.
     const settle = ease(span(progress, 0.8, 0.9));
-    JOBS.forEach((_, index) => root.style.setProperty(`--slice-${index}`, String(0.25 * settle)));
-    const result = root.querySelector<HTMLElement>(".if-result")!;
-    result.classList.toggle("is-on", settle > 0);
-    result.classList.toggle("is-done", settle >= 1);
-    result.querySelector<HTMLElement>(".if-result-amount b")!.textContent = String(Math.round(100 * settle));
+    p.all(".if-split i").forEach((slice) => p.style(slice, "flex-grow", String(0.25 * settle)));
+    const result = p.one(".if-result");
+    p.toggle(result, "is-on", settle > 0);
+    p.toggle(result, "is-done", settle >= 1);
+    p.text(p.one(".if-result-amount b"), String(Math.round(100 * settle)));
 
     // And it never stops: the pill comes in and its three words are ticked one by one.
-    root.querySelector(".ai-always")!.classList.toggle("is-on", progress >= 0.86);
-    root.querySelectorAll(".ai-always li").forEach((item, index) => item.classList.toggle("is-on", progress >= 0.9 + index * 0.04));
+    p.toggle(p.one(".ai-always"), "is-on", progress >= 0.86);
+    p.all(".ai-always li").forEach((item, index) => p.toggle(item, "is-on", progress >= 0.9 + index * 0.04));
   };
   // the story's loop and the wires' measuring always call the latest paint
   const paintRef = useRef(paint);
@@ -103,7 +107,7 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
   useStoryLoop(rootRef, progressRef, paintRef, reduced, PLAY, PAUSE);
 
   return (
-    <section ref={rootRef} id="ai" className="income-flow ai-flow" data-reduced={reduced}>
+    <section ref={rootRef} id="ai" className="income-flow ai-flow">
       <div className="if-track">
         <div className="if-stage">
           <header className="if-head">
@@ -115,8 +119,8 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
           <div className="if-body">
             <div className="if-board">
               <svg className="if-wires" aria-hidden="true">
-                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
-                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={5} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <path key={w.name} data-wire={w.name} d={w.d} pathLength={1} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <circle key={w.name} data-pulse={w.name} r={5} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
               </svg>
 
               <div className="if-column">
@@ -155,7 +159,7 @@ export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: s
                   <strong className="if-result-amount"><b>0</b>%</strong>
                   <span className="if-split-label">{a.split}</span>
                   <div className="if-split" aria-hidden="true">
-                    {JOBS.map((job, index) => <i key={job.key} style={{ background: job.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
+                    {JOBS.map((job) => <i key={job.key} style={{ background: job.color }} />)}
                   </div>
                   <ul className="if-legend">
                     {JOBS.map((job) => <li key={job.key}><i style={{ background: job.color }} />{a.jobs[job.key].short}</li>)}

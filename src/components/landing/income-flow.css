@@ -12,12 +12,11 @@
 /* Heading: the other sections' scale and centring, above the workflow. */
 .income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; }
 .income-flow .if-head h2 { margin: 0; max-width: min(1000px, 92vw); text-wrap: balance; }
-/* the hero's word rise (globals.css), held on its first frame until the heading is on screen */
-.income-flow .if-head .word > span { animation-play-state: paused; }
-.income-flow .if-head.is-in .word > span { animation-play-state: running; }
-.income-flow .if-head p { margin: 0; font-weight: 500; max-width: min(760px, 92vw); color: rgb(255 255 255 / .92); }
+/* the hero's word rise (globals.css), started once the heading is on screen. Until then each word simply waits below
+   its mask with no animation at all: one held paused on its first frame would keep every word a blurred layer */
+.income-flow .if-head .word > span { animation: none; transform: translateY(130%); }
+.income-flow .if-head.is-in .word > span { animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i) * 60ms + var(--d, 0ms)); transform: none; }
 .income-flow .if-body { position: relative; width: 100%; display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.4vh, 30px); }
-.income-flow[data-reduced="true"] .if-head, .income-flow[data-reduced="true"] .if-body { transform: none !important; opacity: 1 !important; }
 
 .income-flow .if-stage { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(24px, 4.5vh, 56px); padding: clamp(64px, 9vh, 104px) clamp(20px, 3.2vw, 64px) clamp(56px, 8vh, 96px); box-sizing: border-box; overflow: hidden; }
 .income-flow .if-stage::before { content: ""; position: absolute; inset: 0; background: radial-gradient(52% 50% at 50% 46%, rgb(191 224 255 / .3), transparent 72%); pointer-events: none; }
@@ -54,7 +53,7 @@
 .income-flow .if-income-node.is-on .if-income > small { opacity: 1; }
 .income-flow .if-income-node.is-on { animation: if-land .45s ease-out; }
 @keyframes if-land { 0% { transform: scale(1); } 35% { transform: scale(1.025); } 100% { transform: scale(1); } }
-/* Coins fall from above the card into it; each is driven by the scroll. */
+/* Coins fall from above the card into it, each driven by the story's progress (--fall). */
 .income-flow .if-coins { position: absolute; left: 0; right: 0; bottom: 50%; height: 16em; pointer-events: none; z-index: 2; }
 .income-flow .if-coins i { position: absolute; left: var(--x); bottom: 0; width: 2.3em; height: 2.3em; margin-left: -1.15em; border-radius: 50%; opacity: 0; will-change: transform, opacity; background: radial-gradient(circle at 34% 30%, #fff 0%, #DCEFFC 38%, #9CCBF8 72%, #6FB0EE 100%); box-shadow: inset 0 0 0 .12em rgb(255 255 255 / .85), inset 0 0 0 .3em rgb(44 152 230 / .28), 0 .5em 1em -.4em rgb(10 37 64 / .6); transform: translate3d(0, calc((1 - var(--fall, 0)) * -15em), 0) rotate(calc(var(--spin) * (1 - var(--fall, 0)))) scale(calc(.7 + .3 * var(--fall, 0))); }
 .income-flow .if-coins i::after { content: "M"; position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: .72em; font-weight: 700; color: #2379B8; }
@@ -99,7 +98,8 @@
 /* The whole card is the loading bar: a tinted sweep fills it from the left
    once the connector arrives; when it is full the card turns solid and its
    information appears. */
-.income-flow .if-rule-load { position: absolute; inset: 0; width: calc(100% * var(--load, 0)); background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 30%, rgb(255 255 255 / .55)), rgb(255 255 255 / .92)); border-radius: inherit; opacity: 0; pointer-events: none; z-index: 0; }
+/* it is revealed by a clip that opens to the right (a width would make the browser lay out the card every frame) */
+.income-flow .if-rule-load { position: absolute; inset: 0; clip-path: inset(0 calc(100% - 100% * var(--load, 0)) 0 0 round 1.5em); background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 30%, rgb(255 255 255 / .55)), rgb(255 255 255 / .92)); border-radius: inherit; opacity: 0; pointer-events: none; z-index: 0; }
 .income-flow .if-rule.is-loading .if-rule-load { opacity: 1; }
 .income-flow .if-rule.is-loading { color: var(--ink); }
 .income-flow .if-rule.is-loading .if-rule-icon { background: color-mix(in srgb, var(--tone) 13%, #fff); color: var(--tone); }
@@ -153,7 +153,6 @@
      height), not to two empty bands above and below them */
   .income-flow .if-stage { gap: clamp(20px, 3.6svh, 40px); padding: clamp(56px, 8svh, 88px) 12px clamp(40px, 6svh, 72px); }
   .income-flow .if-head { gap: 8px; padding: 0 8px; }
-  .income-flow .if-head p { font-size: clamp(15px, 4.3vw, 19px); }
   .income-flow .if-body { gap: clamp(18px, 3.2svh, 34px); }
   /* 50em is the board's natural width once its big figures are trimmed below; 24px is the stage's side padding */
   .income-flow .if-board { width: 100%; font-size: min(15px, calc((100vw - 24px) / 50)); column-gap: 2.4em; }
@@ -182,6 +181,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .income-flow * { transition: none !important; }
+  .income-flow .if-head .word > span, .income-flow .if-head.is-in .word > span { animation: none; transform: none; }
 }
 
 /* The site's neutral primary button on the blue: a white pill. */

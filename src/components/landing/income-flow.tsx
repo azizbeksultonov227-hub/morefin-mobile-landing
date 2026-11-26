@@ -5,13 +5,13 @@ import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { SplitWords } from "@/components/split-words";
 import { useMedia } from "@/components/use-media";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
-import { drawWire, ease, group, span, useStoryLoop, useWires, type Wire } from "./story";
+import { createPainter, drawWire, ease, group, span, useStoryLoop, useWires, type Painter, type Wire } from "./story";
 import "./income-flow.css";
 
 // A port of the Morefin site's income workflow (src/sections/AppHero.tsx + income-flow.css), with the site's look:
-// blue section, white cards, a colour per rule. Changes: GSAP's ScrollTrigger is replaced by a plain scroll listener
-// (no new library); the heading is set like this page's others and the board rises in with it, without the site's
-// half screen of empty page; phones keep the wide three-column board, shrunk to the screen's width.
+// blue section, white cards, a colour per rule. Changes: the story plays by itself on a timer once its board is on
+// screen (story.ts) instead of following the scroll with GSAP; the heading is set like this page's others, without the
+// site's half screen of empty page; phones keep the wide three-column board, shrunk to the screen's width.
 
 // One income and four percentage rules. The percentages are exact on purpose:
 // 5,87% is calculated as 5,87%, never rounded to 6. Each rule has its own
@@ -65,27 +65,30 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   const progressRef = useRef(0);
   const incomeRef = useRef(INCOMES[0]);
   const [income, setIncome] = useState(0);
+  const painterRef = useRef<Painter | null>(null);
 
-  // Paint one frame of the story. Runs on every animation frame and every income
-  // change, so it writes to the DOM directly instead of re-rendering React.
+  // Paint one frame of the story. Runs on every animation frame and every income change, so it writes to the page
+  // directly (and only what changed, through the painter) instead of re-rendering React.
   const paint = () => {
     const root = rootRef.current;
     if (!root) return;
+    const p = (painterRef.current ??= createPainter(root));
+    const wire = (name: string) => wires.find((w) => w.name === name);
     const progress = reduced ? 1 : progressRef.current;
     const amount = incomeRef.current;
     // Act three opens with the income itself: coins fall into the card and the
     // figure counts up from zero. Only then is it distributed.
     const arrived = span(progress, 0.035, 0.158);
-    const incomeNode = root.querySelector<HTMLElement>(".if-income-node")!;
-    incomeNode.classList.toggle("is-on", arrived >= 1);
-    root.querySelectorAll<HTMLElement>(".if-income strong b").forEach((node, index) => { node.textContent = group(INCOMES[index] * arrived); });
-    root.querySelectorAll<HTMLElement>(".if-coins i").forEach((coin, index) => {
+    p.toggle(p.one(".if-income-node"), "is-on", arrived >= 1);
+    p.all(".if-income strong b").forEach((node, index) => p.text(node, group(INCOMES[index] * arrived)));
+    p.all(".if-coins i").forEach((coin, index) => {
       const fall = span(progress, 0.008 + index * 0.014, 0.072 + index * 0.014);
-      coin.style.setProperty("--fall", String(fall));
-      coin.style.opacity = fall <= 0 || fall >= 1 ? "0" : "1";
+      p.style(coin, "--fall", String(fall));
+      p.style(coin, "opacity", fall <= 0 || fall >= 1 ? "0" : "1");
     });
 
     const settle = ease(span(progress, 0.8, 0.9));
+    const slices = p.all(".if-split i:not(.if-split-rest)");
     let deducted = 0;
     RULES.forEach((rule, index) => {
       const begin = 0.18 + index * 0.1;
@@ -95,24 +98,25 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
       const load = span(progress, begin + 0.07, begin + 0.13);
       const count = ease(span(progress, begin + 0.13, begin + 0.2));
       const full = (amount * rule.percent) / 100;
-      const node = root.querySelector<HTMLElement>(`[data-rule="${rule.key}"]`)!;
-      node.classList.toggle("is-loading", load > 0 && load < 1);
-      node.classList.toggle("is-on", load >= 1);
-      node.style.setProperty("--load", String(load));
-      node.querySelector<HTMLElement>(".if-rule-amount b")!.textContent = group(full * count);
-      drawWire(root, `in-${index}`, line);
-      drawWire(root, `out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
-      root.style.setProperty(`--slice-${index}`, String(rule.percent * settle));
+      const node = p.one(`[data-rule="${rule.key}"]`);
+      p.toggle(node, "is-loading", load > 0 && load < 1);
+      p.toggle(node, "is-on", load >= 1);
+      p.style(node, "--load", String(load));
+      p.text(p.one(`[data-rule="${rule.key}"] .if-rule-amount b`), group(full * count));
+      drawWire(p, wire(`in-${index}`), line);
+      drawWire(p, wire(`out-${index}`), span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
+      // each slice of the result's bar grows by itself (a value on the section would restyle all of it)
+      p.style(slices[index], "flex-grow", String(rule.percent * settle));
       deducted += full;
     });
-    const result = root.querySelector<HTMLElement>(".if-result")!;
-    result.classList.toggle("is-on", settle > 0);
-    result.classList.toggle("is-done", settle >= 1);
-    result.querySelector<HTMLElement>(".if-result-amount b")!.textContent = settle > 0 ? group(amount - deducted * settle) : "0";
+    const result = p.one(".if-result");
+    p.toggle(result, "is-on", settle > 0);
+    p.toggle(result, "is-done", settle >= 1);
+    p.text(p.one(".if-result-amount b"), settle > 0 ? group(amount - deducted * settle) : "0");
     const meter = ease(span(progress, 0.9, 1));
-    root.style.setProperty("--meter", String(meter));
-    root.querySelector<HTMLElement>(".if-stat")!.classList.toggle("is-on", meter > 0);
-    root.querySelector<HTMLElement>(".if-stat-value")!.textContent = `${Math.round(95 * meter)}%`;
+    p.style(p.one(".if-stat-bar i"), "--meter", String(meter));
+    p.toggle(p.one(".if-stat"), "is-on", meter > 0);
+    p.text(p.one(".if-stat-value"), `${Math.round(95 * meter)}%`);
   };
   // the story's loop and the wires' measuring always call the latest paint
   const paintRef = useRef(paint);
@@ -141,7 +145,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
   };
 
   return (
-    <section ref={rootRef} id="how" className="income-flow" data-reduced={reduced}>
+    <section ref={rootRef} id="how" className="income-flow">
       <div className="if-track">
         <div className="if-stage">
           <header className="if-head">
@@ -154,8 +158,8 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
           <div className="if-body">
             <div className="if-board">
               <svg className="if-wires" aria-hidden="true">
-                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": RULES[w.index].color } as CSSProperties} />)}
-                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={5} />)}
+                {wires.map((w) => <path key={w.name} data-wire={w.name} d={w.d} pathLength={1} style={{ "--tone": RULES[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <circle key={w.name} data-pulse={w.name} r={5} />)}
               </svg>
 
               <div className="if-column">
@@ -205,7 +209,7 @@ export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; star
                   <strong className="if-result-amount"><b>{group(INCOMES[0])}</b> <span>{t.currency}</span></strong>
                   <span className="if-split-label">{f.split}</span>
                   <div className="if-split" aria-hidden="true">
-                    {RULES.map((rule, index) => <i key={rule.key} style={{ background: rule.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
+                    {RULES.map((rule) => <i key={rule.key} style={{ background: rule.color }} />)}
                     <i className="if-split-rest" style={{ flexGrow: REST }} />
                   </div>
                   <ul className="if-legend">
