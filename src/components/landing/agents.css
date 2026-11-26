@@ -15,11 +15,14 @@
 }
 .agents-char svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 .35em .4em rgb(15 23 42 / .18)); }
 
-/* now and then each one blinks; the one at work also bobs very slightly */
-.agents-eyes { transform-box: fill-box; transform-origin: center; animation: agents-blink 4.2s var(--blink, 0s) infinite; }
-@keyframes agents-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.12); } }
-.agents-char.is-on svg { animation: agents-bob 3s ease-in-out infinite; }
-@keyframes agents-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.12em); } }
+/* now and then one of them blinks (agents.tsx marks it for a moment, so nothing animates in between); the one at
+   work also bobs very slightly. The bob moves the whole character (the translate property, composited), so its
+   shadow is drawn once and carried along instead of being redrawn every frame */
+.agents-eyes { transform-box: fill-box; transform-origin: center; }
+.agents-char.is-blinking .agents-eyes { animation: agents-blink .3s ease-in-out; }
+@keyframes agents-blink { 50% { transform: scaleY(.12); } }
+.agents-char.is-on { animation: agents-bob 3s ease-in-out infinite; }
+@keyframes agents-bob { 50% { translate: 0 -.12em; } }
 
 /* some lines take one row and some two, so the line always keeps room for two (the text in its middle): the heading
    and the buttons under it never shift when the next employee comes up */
@@ -28,8 +31,8 @@
 @keyframes agents-in { from { opacity: 0; filter: blur(5px); transform: translateY(.3em); } }
 
 /* scrolled away, the row holds still (its animations cost nothing off screen) */
-.agents.is-away .agents-eyes, .agents.is-away .agents-char.is-on svg { animation-play-state: paused; }
+.agents.is-away .agents-char.is-on { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
-  .agents-char, .agents-line, .agents-eyes, .agents-char.is-on svg { transition: none; animation: none; }
+  .agents-char, .agents-line, .agents-char.is-blinking .agents-eyes, .agents-char.is-on { transition: none; animation: none; }
 }

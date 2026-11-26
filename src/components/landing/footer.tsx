@@ -9,7 +9,8 @@ import { Langs } from "./header";
 // the pixel wordmark is only fetched once the footer comes near
 const ParticleText = dynamic(() => import("@/components/rb/particle-text"), { ssr: false });
 
-// the logo is made of pixels (like its own pixel "fin"): the pointer scatters them, a click bursts them, they always come back
+// the logo is made of pixels (like its own pixel "fin"): the pointer scatters them, a click bursts them, they always come back;
+// on a phone they rest once gathered (a drift of half a pixel nobody sees there would keep the canvas redrawing every frame)
 export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
@@ -45,7 +46,7 @@ export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
             gatherDuration={1400}
             pointerRepel={70}
             repelRadius={110}
-            idleDrift={0.4}
+            idleDrift={wide ? 0.4 : 0}
             glow={false}
             className="!min-h-0"
           />

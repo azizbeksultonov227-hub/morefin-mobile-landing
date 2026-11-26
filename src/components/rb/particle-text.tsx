@@ -534,6 +534,10 @@ const ParticleText = ({
       }
 
       if (s.glow) {
+        if (layer.width !== canvas.width || layer.height !== canvas.height) {
+          layer.width = canvas.width;
+          layer.height = canvas.height;
+        }
         layerCtx.setTransform(1, 0, 0, 1, 0, 0);
         layerCtx.clearRect(0, 0, layer.width, layer.height);
         layerCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -696,8 +700,9 @@ const ParticleText = ({
       dpr = nextDpr;
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
-      layer.width = canvas.width;
-      layer.height = canvas.height;
+      // the glow's own canvas is only given a size once a glow is drawn (a full-size one costs about 1 MB for nothing)
+      layer.width = 1;
+      layer.height = 1;
 
       bounds.left = Infinity;
       bounds.right = -Infinity;
@@ -842,12 +847,8 @@ const ParticleText = ({
     });
     intersectionObserver.observe(container);
 
-    const themeObserver = new MutationObserver(wake);
-    for (const node of [document.documentElement, document.body]) {
-      if (node) themeObserver.observe(node, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
-    }
-    const schemeQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
-    schemeQuery?.addEventListener?.('change', wake);
+    // (this page is light only, so it does not watch for a theme change: that watch also woke it on every class the
+    // page's own scripts set on <html>)
 
     void sampleText();
 
@@ -857,8 +858,6 @@ const ParticleText = ({
       wakeRef.current = () => {};
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
-      themeObserver.disconnect();
-      schemeQuery?.removeEventListener?.('change', wake);
       motionQuery?.removeEventListener?.('change', handleReduceMotionChange);
       canvas.removeEventListener('pointerenter', handlePointerEnter);
       canvas.removeEventListener('pointermove', handlePointerMove);

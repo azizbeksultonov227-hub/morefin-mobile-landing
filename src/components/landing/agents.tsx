@@ -29,6 +29,7 @@ export function Agents({ items }: { items: { role: string; text: string }[] }) {
   // the row works only while it is on screen: scrolled away, the turns stop and the blinking holds
   const [shown, setShown] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
   const n = AGENTS.length;
   useEffect(() => {
     const io = new IntersectionObserver(([entry]) => setShown(entry.isIntersecting));
@@ -41,17 +42,32 @@ export function Agents({ items }: { items: { role: string; text: string }[] }) {
     const id = setInterval(() => setActive((a) => (a + 1) % n), EVERY);
     return () => clearInterval(id);
   }, [n, shown]);
+  useEffect(() => {
+    if (!shown || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // every second or so one of the visible employees blinks, for a moment
+    let open = 0;
+    const id = setInterval(() => {
+      const faces = [...rowRef.current!.children].filter((face) => (face as HTMLElement).style.opacity !== "0");
+      const face = faces[Math.floor(Math.random() * faces.length)];
+      face?.classList.add("is-blinking");
+      open = window.setTimeout(() => face?.classList.remove("is-blinking"), 320);
+    }, 1100);
+    return () => {
+      clearInterval(id);
+      clearTimeout(open);
+    };
+  }, [shown]);
   const now = items[active % items.length];
 
   return (
     <div ref={ref} className={`agents ${shown ? "" : "is-away"}`}>
-      <div className="agents-row" aria-hidden>
+      <div ref={rowRef} className="agents-row" aria-hidden>
         {AGENTS.map((agent, i) => {
           let d = (i - active + n) % n;
           if (d > n / 2) d -= n;
           const slot = SLOTS[d];
           return (
-            <span key={agent.shape} className={`agents-char ${d === 0 ? "is-on" : ""}`} style={{ "--x": `${slot.x}em`, "--s": slot.s, opacity: Math.abs(d) <= 2 ? 1 : 0, "--blink": `${(i * 0.83) % 4}s` } as React.CSSProperties}>
+            <span key={agent.shape} className={`agents-char ${d === 0 ? "is-on" : ""}`} style={{ "--x": `${slot.x}em`, "--s": slot.s, opacity: Math.abs(d) <= 2 ? 1 : 0 } as React.CSSProperties}>
               <Character shape={agent.shape} from={agent.from} to={agent.to} />
             </span>
           );
