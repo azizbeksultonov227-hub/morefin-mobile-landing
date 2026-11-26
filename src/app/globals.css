@@ -37,9 +37,12 @@ html { background: var(--bg); color: var(--fg); }
 body { -webkit-tap-highlight-color: rgb(31 79 234 / 0.12); font-family: var(--font-sans), system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 
 /* entrance on first paint, no JS needed: words rise out of blur, blocks fade up */
-@keyframes rise { from { transform: translateY(105%); filter: blur(6px); } }
+@keyframes rise { from { transform: translateY(130%); filter: blur(6px); } }
 @keyframes appear { from { opacity: 0; transform: translateY(14px); } }
-.word { display: inline-block; overflow: hidden; padding-bottom: 0.08em; vertical-align: bottom; }
+/* Each word rises inside its own mask. The headings' lines are tighter than the letters are tall, so the mask reaches
+   past the line above and below (padding) and the negative margins give that room back: the tails of y, g, q and the
+   accents are never cut, and the lines keep their spacing. */
+.word { display: inline-block; overflow: hidden; padding: 0.14em 0 0.26em; margin: -0.14em 0 -0.18em; vertical-align: bottom; }
 .word > span { display: inline-block; animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i) * 60ms + var(--d, 0ms)); }
 .appear { animation: appear 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
 @media (prefers-reduced-motion: reduce) {
