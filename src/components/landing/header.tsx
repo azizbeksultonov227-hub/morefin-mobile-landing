@@ -3,7 +3,7 @@
 import { Check, ChevronDown, Globe } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Wordmark } from "@/components/mark";
-import { APP_URL, DICT, LOCALES, path, type Locale } from "@/i18n";
+import { APP_URL, LOCALES, NAMES, path, type Locale } from "@/i18n";
 
 // remember the visitor's own pick so "/" stops following their country
 export const pick = (l: Locale) => { document.cookie = `lang=${l}; path=/; max-age=31536000; samesite=lax`; };
@@ -58,7 +58,7 @@ function LangMenu({ locale }: { locale: Locale }) {
 
   return (
     <div ref={ref} className="relative">
-      <button type="button" aria-haspopup="true" aria-expanded={open} aria-label={DICT[locale].name} onClick={() => setOpen((o) => !o)} className="relative flex h-9 items-center gap-1.5 after:absolute after:inset-x-0 after:-inset-y-1 rounded-full px-2.5 text-sm font-medium text-fg/80 outline-none transition hover:bg-fg/5 hover:text-fg focus-visible:ring-2 focus-visible:ring-primary/40">
+      <button type="button" aria-haspopup="true" aria-expanded={open} aria-label={NAMES[locale]} onClick={() => setOpen((o) => !o)} className="relative flex h-9 items-center gap-1.5 after:absolute after:inset-x-0 after:-inset-y-1 rounded-full px-2.5 text-sm font-medium text-fg/80 outline-none transition hover:bg-fg/5 hover:text-fg focus-visible:ring-2 focus-visible:ring-primary/40">
         <Globe className="size-4" aria-hidden />
         <span className="uppercase">{locale}</span>
         <ChevronDown className={`size-3.5 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
@@ -67,7 +67,7 @@ function LangMenu({ locale }: { locale: Locale }) {
         <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-line bg-card p-1 shadow-lg shadow-slate-900/10">
           {LOCALES.map((l) => (
             <a key={l} href={path(l)} hrefLang={l} lang={l} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`flex min-h-11 items-center justify-between rounded-lg px-3 text-sm transition hover:bg-fg/5 ${l === locale ? "font-semibold text-fg" : "text-fg/80"}`}>
-              {DICT[l].name}
+              {NAMES[l]}
               {l === locale ? <Check className="size-4 text-primary" aria-hidden /> : <span className="text-xs uppercase text-muted">{l}</span>}
             </a>
           ))}
@@ -80,9 +80,9 @@ function LangMenu({ locale }: { locale: Locale }) {
 // one segmented pill: a quiet track, the current language on a raised white thumb
 export function Langs({ locale }: { locale: Locale }) {
   return (
-    <span className="flex h-9 items-center rounded-full bg-fg/[0.06] p-1 dark:bg-white/[0.07]">
+    <span className="flex h-9 items-center rounded-full bg-fg/[0.06] p-1">
       {LOCALES.map((l) => (
-        <a key={l} href={path(l)} hrefLang={l} lang={l} aria-label={DICT[l].name} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`relative flex h-7 min-w-11 items-center justify-center rounded-full px-2 after:absolute after:inset-x-0 after:-inset-y-2 text-xs font-semibold uppercase tracking-wide transition ${l === locale ? "bg-card text-fg shadow-sm shadow-slate-900/10 dark:bg-white/15" : "text-muted hover:text-fg"}`}>
+        <a key={l} href={path(l)} hrefLang={l} lang={l} aria-label={NAMES[l]} onClick={() => pick(l)} aria-current={l === locale ? "page" : undefined} className={`relative flex h-7 min-w-11 items-center justify-center rounded-full px-2 after:absolute after:inset-x-0 after:-inset-y-2 text-xs font-semibold uppercase tracking-wide transition ${l === locale ? "bg-card text-fg shadow-sm shadow-slate-900/10" : "text-muted hover:text-fg"}`}>
           {l}
         </a>
       ))}

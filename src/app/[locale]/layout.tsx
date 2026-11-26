@@ -7,7 +7,9 @@ import { DICT, isLocale, LOCALES, pageUrl, SITE_URL } from "@/i18n";
 import "../globals.css";
 import "lenis/dist/lenis.css";
 
-const geist = Geist({ subsets: ["latin", "latin-ext", "cyrillic"], variable: "--font-geist" });
+// Uzbek and English need only the latin set (their ‘ and ʻ are in it), Russian the cyrillic one; latin-ext is never
+// needed, so it is not fetched up front (its rules stay declared, should a character ever ask for it)
+const geist = Geist({ subsets: ["latin", "cyrillic"], variable: "--font-geist" });
 
 export const dynamicParams = false;
 export const generateStaticParams = () => LOCALES.map((locale) => ({ locale }));

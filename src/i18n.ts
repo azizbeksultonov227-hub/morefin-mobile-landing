@@ -1,6 +1,8 @@
 export const LOCALES = ["uz", "ru", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const isLocale = (v: unknown): v is Locale => LOCALES.includes(v as Locale);
+// each language in its own words, for the language menus (apart from the texts, so the menus do not carry them)
+export const NAMES: Record<Locale, string> = { uz: "O‘zbekcha", ru: "Русский", en: "English" };
 
 // where the landing lives and where every "start" button leads
 export const SITE_URL = "https://morefin.uz";
@@ -16,7 +18,6 @@ export const countryLocale = (c: string | null): Locale => (!c || c === "UZ" || 
 
 
 const uz = {
-  name: "O‘zbekcha",
   meta: {
     title: "Morefin — biznes moliyasi avtomatik hisoblanadi",
     description: "Kirim tushishi bilan sof foyda, sherik ulushi, KPI va soliq avtomatik hisoblanadi. Xarajatlar, qarzlar va rejalar — bitta joyda.",
@@ -85,7 +86,6 @@ const uz = {
 export type Dict = typeof uz;
 
 const ru: Dict = {
-  name: "Русский",
   meta: {
     title: "Morefin — финансы бизнеса считаются сами",
     description: "Как только приходит доход, чистая прибыль, доля партнёра, KPI и налог считаются автоматически. Расходы, долги и планы — в одном месте.",
@@ -151,7 +151,6 @@ const ru: Dict = {
 };
 
 const en: Dict = {
-  name: "English",
   meta: {
     title: "Morefin — business finance that does the maths",
     description: "The moment income arrives, net profit, partner shares, KPI and tax are calculated automatically. Expenses, debts and plans in one place.",
