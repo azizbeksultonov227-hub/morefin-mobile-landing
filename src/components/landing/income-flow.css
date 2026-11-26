@@ -148,11 +148,13 @@
 .income-flow .if-rule-amount em, .income-flow .if-rule-name small, .income-flow .if-income > small, .income-flow .if-legend { letter-spacing: -0.01em; }
 
 @media (max-width: 1023px) {
-  /* phones: tighter padding; the section still fills the screen, the shrunk board in its middle */
-  .income-flow .if-stage { gap: 16px; padding: 48px 12px 40px; }
+  /* phones: the section still fills the screen. The board is as wide as the screen allows, so on a tall phone the
+     rest of the height goes to air between the heading, the board and the button (it grows with the screen's
+     height), not to two empty bands above and below them */
+  .income-flow .if-stage { gap: clamp(20px, 3.6svh, 40px); padding: clamp(56px, 8svh, 88px) 12px clamp(40px, 6svh, 72px); }
   .income-flow .if-head { gap: 8px; padding: 0 8px; }
   .income-flow .if-head p { font-size: clamp(15px, 4.3vw, 19px); }
-  .income-flow .if-body { gap: 18px; }
+  .income-flow .if-body { gap: clamp(18px, 3.2svh, 34px); }
   /* 50em is the board's natural width once its big figures are trimmed below; 24px is the stage's side padding */
   .income-flow .if-board { width: 100%; font-size: min(15px, calc((100vw - 24px) / 50)); column-gap: 2.4em; }
   .income-flow .if-income strong { font-size: 1.6em; }
@@ -171,6 +173,10 @@
   .income-flow .if-stat-value { min-width: 0; font-size: 20px; }
   .income-flow .if-stat-text { font-size: 13.5px; }
   .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
+}
+@media (max-width: 639px) {
+  /* a phone's heading is set as large as the hero's, so the screen reads as a page of its own */
+  .income-flow .if-head h2 { font-size: clamp(2.1rem, 9.4vw, 2.6rem); }
 }
 @media (prefers-reduced-motion: reduce) {
   .income-flow * { transition: none !important; }

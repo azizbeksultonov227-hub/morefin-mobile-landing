@@ -15,7 +15,7 @@ export function Hero({ t }: { t: Dict }) {
   const fine = useMedia("(pointer: fine)");
 
   return (
-    <section data-hero className="relative flex min-h-svh flex-col overflow-hidden">
+    <section data-hero className="relative flex min-h-[88svh] flex-col overflow-hidden md:min-h-svh">
       {fine ? (
         <CursorGrid className="!absolute inset-0" cellSize={46} color="#3b6cff" lightMode radius={140} holdTime={700} fadeDuration={2200} fillOpacity={0.1} gridOpacity={0.07} spotlight={0.5} />
       ) : (
@@ -24,7 +24,9 @@ export function Hero({ t }: { t: Dict }) {
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] [background:radial-gradient(55%_60%_at_50%_0%,rgb(31_79_234/0.18),transparent)]" />
 
       {/* centred a little above the middle of the screen (more room below than above); on phones and tablets also
-          centred across, like the page's other screens, so the AI employee at work stands in the middle */}
+          centred across, like the page's other screens, so the AI employee at work stands in the middle. On a phone
+          the screen is a little shorter than the display, so the blue story below shows at its foot instead of an
+          empty band */}
       <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-5 pb-24 pt-20 max-md:items-center max-md:text-center md:px-10 md:pb-32 md:pt-24">
         {/* what Morefin's AI employees are busy with, one at a time */}
         <div className="appear mb-7 md:mb-10">
