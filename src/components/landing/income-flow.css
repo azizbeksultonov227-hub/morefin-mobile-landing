@@ -170,7 +170,8 @@
   .income-flow .if-coins { height: 11em; }
   /* the 95% line: a compact pill that sits with the board */
   .income-flow .if-stat { grid-template-columns: auto auto; gap: 0 10px; padding: 7px 16px 7px 12px; }
-  .income-flow .if-stat-value { min-width: 0; font-size: 20px; }
+  /* it keeps the width of "95%" while it counts up, so the pill and its words do not shift */
+  .income-flow .if-stat-value { font-size: 20px; }
   .income-flow .if-stat-text { font-size: 13.5px; }
   .income-flow .if-stat-bar, .income-flow .if-stat-rest { display: none; }
 }
