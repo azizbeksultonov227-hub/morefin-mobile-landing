@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import "./agents.css";
 
 // Morefin's AI "employees", one per thing the product does for a business. Each is a small glossy character drawn
@@ -26,17 +26,25 @@ const EVERY = 4500;
 
 export function Agents({ items }: { items: { role: string; text: string }[] }) {
   const [active, setActive] = useState(0);
+  // the row works only while it is on screen: scrolled away, the turns stop and the blinking holds
+  const [shown, setShown] = useState(true);
+  const ref = useRef<HTMLDivElement>(null);
   const n = AGENTS.length;
   useEffect(() => {
+    const io = new IntersectionObserver(([entry]) => setShown(entry.isIntersecting));
+    io.observe(ref.current!);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
     // still for anyone who asked for less motion: the first employee stays
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!shown || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = setInterval(() => setActive((a) => (a + 1) % n), EVERY);
     return () => clearInterval(id);
-  }, [n]);
+  }, [n, shown]);
   const now = items[active % items.length];
 
   return (
-    <div className="agents">
+    <div ref={ref} className={`agents ${shown ? "" : "is-away"}`}>
       <div className="agents-row" aria-hidden>
         {AGENTS.map((agent, i) => {
           let d = (i - active + n) % n;

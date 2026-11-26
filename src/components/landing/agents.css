@@ -27,6 +27,9 @@
 .agents-line b { font-weight: 600; color: var(--fg); }
 @keyframes agents-in { from { opacity: 0; filter: blur(5px); transform: translateY(.3em); } }
 
+/* scrolled away, the row holds still (its animations cost nothing off screen) */
+.agents.is-away .agents-eyes, .agents.is-away .agents-char.is-on svg { animation-play-state: paused; }
+
 @media (prefers-reduced-motion: reduce) {
   .agents-char, .agents-line, .agents-eyes, .agents-char.is-on svg { transition: none; animation: none; }
 }

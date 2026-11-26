@@ -10,7 +10,7 @@
 .income-flow { position: relative; background: linear-gradient(180deg, #2C98E6 0%, #2788CF 38%, #1E6AA1 100%); color: #fff; --ink: #0F2A47; --if-line: rgb(255 255 255 / .3); }
 
 /* Heading: the other sections' scale and centring, above the workflow. */
-.income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; will-change: transform, opacity; }
+.income-flow .if-head { position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(8px, 1.6vh, 20px); text-align: center; }
 .income-flow .if-head h2 { margin: 0; max-width: min(1000px, 92vw); text-wrap: balance; }
 /* the hero's word rise (globals.css), held on its first frame until the heading is on screen */
 .income-flow .if-head .word > span { animation-play-state: paused; }
@@ -56,7 +56,7 @@
 @keyframes if-land { 0% { transform: scale(1); } 35% { transform: scale(1.025); } 100% { transform: scale(1); } }
 /* Coins fall from above the card into it; each is driven by the scroll. */
 .income-flow .if-coins { position: absolute; left: 0; right: 0; bottom: 50%; height: 16em; pointer-events: none; z-index: 2; }
-.income-flow .if-coins i { position: absolute; left: var(--x); bottom: 0; width: 2.3em; height: 2.3em; margin-left: -1.15em; border-radius: 50%; opacity: 0; background: radial-gradient(circle at 34% 30%, #fff 0%, #DCEFFC 38%, #9CCBF8 72%, #6FB0EE 100%); box-shadow: inset 0 0 0 .12em rgb(255 255 255 / .85), inset 0 0 0 .3em rgb(44 152 230 / .28), 0 .5em 1em -.4em rgb(10 37 64 / .6); transform: translate3d(0, calc((1 - var(--fall, 0)) * -15em), 0) rotate(calc(var(--spin) * (1 - var(--fall, 0)))) scale(calc(.7 + .3 * var(--fall, 0))); }
+.income-flow .if-coins i { position: absolute; left: var(--x); bottom: 0; width: 2.3em; height: 2.3em; margin-left: -1.15em; border-radius: 50%; opacity: 0; will-change: transform, opacity; background: radial-gradient(circle at 34% 30%, #fff 0%, #DCEFFC 38%, #9CCBF8 72%, #6FB0EE 100%); box-shadow: inset 0 0 0 .12em rgb(255 255 255 / .85), inset 0 0 0 .3em rgb(44 152 230 / .28), 0 .5em 1em -.4em rgb(10 37 64 / .6); transform: translate3d(0, calc((1 - var(--fall, 0)) * -15em), 0) rotate(calc(var(--spin) * (1 - var(--fall, 0)))) scale(calc(.7 + .3 * var(--fall, 0))); }
 .income-flow .if-coins i::after { content: "M"; position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: .72em; font-weight: 700; color: #2379B8; }
 .income-flow .if-incomes { display: flex; margin-top: 1.1em; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x pan-y; outline: none; border-radius: .6em; }
 .income-flow .if-incomes::-webkit-scrollbar { display: none; }
@@ -164,9 +164,10 @@
   .income-flow .if-legend { font-size: .84em; }
   /* the fine print (the rules' explanations, the income's time) would wrap and make the cards uneven */
   .income-flow .if-rule-name small, .income-flow .if-income-top small { display: none; }
-  /* thinner lines, so they keep the same weight against the smaller cards */
-  .income-flow .if-wires path { stroke-width: 1.5; filter: drop-shadow(0 0 3px rgb(255 255 255 / .45)); }
-  .income-flow .if-wires circle { r: 2.8px; filter: drop-shadow(0 0 4px rgb(255 255 255 / .95)); }
+  /* thinner lines, so they keep the same weight against the smaller cards; and no glow: a blurred shadow on the
+     lines is redrawn every frame while they draw, which a phone feels, and at this size it barely showed */
+  .income-flow .if-wires path { stroke-width: 1.5; filter: none; }
+  .income-flow .if-wires circle { r: 2.8px; filter: none; }
   .income-flow .if-coins { height: 11em; }
   /* the 95% line: a compact pill that sits with the board */
   .income-flow .if-stat { grid-template-columns: auto auto; gap: 0 10px; padding: 7px 16px 7px 12px; }
