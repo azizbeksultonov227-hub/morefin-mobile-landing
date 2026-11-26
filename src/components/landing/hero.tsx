@@ -2,8 +2,8 @@
 
 import { ArrowRight, Play } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useSyncExternalStore } from "react";
 import { SplitWords } from "@/components/split-words";
+import { useMedia } from "@/components/use-media";
 import { Agents } from "./agents";
 import { APP_URL, type Dict } from "@/i18n";
 
@@ -55,14 +55,5 @@ export function Hero({ t }: { t: Dict }) {
         </div>
       </div>
     </section>
-  );
-}
-
-/** Whether a media query matches; false on the server and in the first paint. */
-function useMedia(query: string) {
-  return useSyncExternalStore(
-    (f) => { const mq = matchMedia(query); mq.addEventListener("change", f); return () => mq.removeEventListener("change", f); },
-    () => matchMedia(query).matches,
-    () => false,
   );
 }

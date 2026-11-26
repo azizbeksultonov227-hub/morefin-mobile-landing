@@ -1,7 +1,6 @@
 "use client";
 
-import { useInView } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { LOGO } from "@/components/mark";
 import { APP_URL, type Locale } from "@/i18n";
@@ -13,7 +12,16 @@ const ParticleText = dynamic(() => import("@/components/rb/particle-text"), { ss
 // the logo is made of pixels (like its own pixel "fin"): the pointer scatters them, a click bursts them, they always come back
 export function Footer({ locale, signIn }: { locale: Locale; signIn: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const near = useInView(ref, { once: true, margin: "200px" });
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setNear(true);
+      io.disconnect();
+    }, { rootMargin: "200px" });
+    io.observe(ref.current!);
+    return () => io.disconnect();
+  }, []);
   // bigger pixels on a wide screen, so they still read as pixels; only read once in view, never on the server
   const wide = near && matchMedia("(min-width: 768px)").matches;
   return (

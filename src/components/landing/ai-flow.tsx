@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useReducedMotion } from "motion/react";
 import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import { MorefinMark } from "@/components/mark";
 import { SplitWords } from "@/components/split-words";
+import { useMedia } from "@/components/use-media";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
 import { drawWire, ease, span, useStoryLoop, useWires, type Wire } from "./story";
 import "./income-flow.css";
@@ -53,7 +53,7 @@ const Tick = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 
 
 export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: string }) {
   const a = t.ai;
-  const reduced = useReducedMotion() ?? false;
+  const reduced = useMedia("(prefers-reduced-motion: reduce)");
   const rootRef = useRef<HTMLElement>(null);
   // how far the story has played, 0 to 1 (driven by time once the board is fully on screen, not by scrolling)
   const progressRef = useRef(0);

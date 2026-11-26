@@ -1,9 +1,9 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
-import { useReducedMotion } from "motion/react";
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { SplitWords } from "@/components/split-words";
+import { useMedia } from "@/components/use-media";
 import { APP_URL, type Dict, type Locale } from "@/i18n";
 import { drawWire, ease, group, span, useStoryLoop, useWires, type Wire } from "./story";
 import "./income-flow.css";
@@ -59,7 +59,7 @@ function Start({ label, lead }: { label: string; lead: string }) {
 
 export function IncomeFlow({ t, locale, start }: { t: Dict; locale: Locale; start: string }) {
   const f = t.flow;
-  const reduced = useReducedMotion() ?? false;
+  const reduced = useMedia("(prefers-reduced-motion: reduce)");
   const rootRef = useRef<HTMLElement>(null);
   // how far the story has played, 0 to 1 (driven by time once the section is fully on screen, not by scrolling)
   const progressRef = useRef(0);
