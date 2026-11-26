@@ -33,7 +33,7 @@ export function Header({ locale, signIn }: { locale: Locale; signIn: string }) {
   return (
     <header className={`fixed inset-x-0 top-0 z-50 px-2.5 pt-2.5 transition-transform duration-300 ease-out motion-reduce:transition-none md:px-6 md:pt-3 ${away ? "-translate-y-[130%]" : ""}`}>
       <div className={`mx-auto flex max-w-6xl items-center justify-between rounded-full py-1.5 pl-2.5 pr-1.5 transition-[background-color,box-shadow] duration-300 min-[360px]:pl-3 md:py-2 md:pl-5 ${scrolled ? "bg-white shadow-[0_10px_30px_-14px_rgb(15_23_42/0.35)] ring-1 ring-slate-900/[0.06]" : ""}`}>
-        <a href={path(locale)} className="relative shrink-0 after:absolute after:inset-x-0 after:-inset-y-1.5"><Wordmark priority height={36} className="h-7 min-[360px]:h-8 md:h-9" /></a>
+        <a href={path(locale)} className="relative shrink-0 after:absolute after:inset-x-0 after:-inset-y-2"><Wordmark priority height={36} className="h-7 min-[360px]:h-8 md:h-9" /></a>
         <nav className="flex items-center gap-0.5 min-[360px]:gap-1">
           <LangMenu locale={locale} />
           <a href={APP_URL} className="relative flex h-9 items-center rounded-full bg-slate-900/[0.06] px-4 after:absolute after:inset-x-0 after:-inset-y-1 text-sm font-semibold text-fg transition hover:bg-slate-900/10">{signIn}</a>
