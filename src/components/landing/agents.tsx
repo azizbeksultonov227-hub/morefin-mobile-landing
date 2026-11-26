@@ -49,7 +49,7 @@ export function Agents({ items }: { items: { role: string; text: string }[] }) {
           );
         })}
       </div>
-      <p key={active} className="agents-line"><b>{now.role}</b> {now.text}</p>
+      <p key={active} className="agents-line"><span><b>{now.role}</b> {now.text}</span></p>
     </div>
   );
 }
