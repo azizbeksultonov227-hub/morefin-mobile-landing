@@ -5,54 +5,58 @@ import { useReducedMotion } from "motion/react";
 import { useLayoutEffect, useRef, type CSSProperties } from "react";
 import { MorefinMark } from "@/components/mark";
 import { SplitWords } from "@/components/split-words";
-import { APP_URL, type Dict } from "@/i18n";
-import { drawWire, ease, group, span, useStoryLoop, useWires, type Wire } from "./story";
+import { APP_URL, type Dict, type Locale } from "@/i18n";
+import { drawWire, ease, span, useStoryLoop, useWires, type Wire } from "./story";
 import "./income-flow.css";
 import "./ai-flow.css";
 
-// How Morefin AI works, told like the blue income flow above it and built on the same board (its classes and
-// layout come from income-flow.css; ai-flow.css gives it the page's light look and its own cards):
-// 1, a receipt is photographed; 2, Morefin AI reads four things off it, each on its own card; 3, you confirm the
-// proposed expense, and what it updates is ticked off. It plays by itself once the board is wholly on screen.
+// What Morefin AI does for a business, told like the blue income flow above it and built on the same board (its
+// classes and layout come from income-flow.css; ai-flow.css gives it the page's light look and its own cards).
+// The heading says it does a financier's whole job; 1, the business's money comes in; 2, Morefin AI does the four
+// jobs, one card each (answers questions, prepares reports, reminds, manages payments); 3, the financier's job fills
+// up to 100%. The pill under the board says it never sleeps, is never late and never tires.
 
-const FIELDS = [
-  { key: "amount", color: "#2C98E6" },
-  { key: "category", color: "#7A70D4" },
-  { key: "account", color: "#12A5B8" },
-  { key: "date", color: "#F59E0B" },
+const JOBS = [
+  { key: "answer", color: "#2C98E6" },
+  { key: "report", color: "#7A70D4" },
+  { key: "remind", color: "#12A5B8" },
+  { key: "pay", color: "#F59E0B" },
 ] as const;
-type Field = (typeof FIELDS)[number]["key"];
+type Job = (typeof JOBS)[number]["key"];
 
 // the same pace as the income flow: it plays, holds its result, then plays again
 const PLAY = 7000;
 const PAUSE = 2500;
 
-// one connector from the photo to each field, and one from each field to the proposal
+// one connector from the business to each job, and one from each job to the result
 const WIRES: Wire[] = [
-  ...FIELDS.map((field, index) => ({ role: "in" as const, index, from: ".ai-photo", to: `[data-field="${field.key}"]` })),
-  ...FIELDS.map((field, index) => ({ role: "out" as const, index, from: `[data-field="${field.key}"]`, to: ".if-result" })),
+  ...JOBS.map((job, index) => ({ role: "in" as const, index, from: ".ai-feed", to: `[data-job="${job.key}"]` })),
+  ...JOBS.map((job, index) => ({ role: "out" as const, index, from: `[data-job="${job.key}"]`, to: ".if-result" })),
 ];
 
-function FieldIcon({ kind }: { kind: Field }) {
+/** 48 000 000 as "+48 mln", −5 600 000 as "−5,6 mln" (the unit and decimal mark follow the language). */
+const millions = (value: number, unit: string, locale: Locale) =>
+  `${value < 0 ? "−" : "+"}${String(Math.round(Math.abs(value) / 100_000) / 10).replace(".", locale === "en" ? "." : ",")}${unit}`;
+
+function JobIcon({ kind }: { kind: Job }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {kind === "amount" ? <><rect x="2.8" y="6" width="18.4" height="12" rx="2.4" /><circle cx="12" cy="12" r="2.6" /><path d="M6.2 9.4v.01M17.8 14.6v.01" /></>
-        : kind === "category" ? <><path d="M3.5 12.2V4.8a1.3 1.3 0 0 1 1.3-1.3h7.4l8.3 8.3a1.3 1.3 0 0 1 0 1.8l-7.4 7.4a1.3 1.3 0 0 1-1.8 0Z" /><circle cx="8.2" cy="8.2" r="1.4" /></>
-        : kind === "account" ? <><path d="M19 7.5V6a2 2 0 0 0-2-2H5.5A2.5 2.5 0 0 0 3 6.5v11A2.5 2.5 0 0 0 5.5 20H19a2 2 0 0 0 2-2v-8.5a2 2 0 0 0-2-2H5.5" /><path d="M16.5 13.8h.01" /></>
-        : <><rect x="3.5" y="5" width="17" height="15.5" rx="2.6" /><path d="M3.5 10h17M8 3v4M16 3v4" /></>}
+      {kind === "answer" ? <><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 3.8V16A2.5 2.5 0 0 1 4 13.5Z" /><path d="M10.2 8.6a1.9 1.9 0 1 1 2.5 1.8c-.4.15-.7.5-.7.9v.3M12 13.2h.01" /></>
+        : kind === "report" ? <><path d="M3.5 20.5h17" /><path d="M7 16.5v-5M12 16.5V6.5M17 16.5v-8" /></>
+        : kind === "remind" ? <><path d="M18.5 16.5h-13l1.4-2V10a5.1 5.1 0 0 1 10.2 0v4.5Z" /><path d="M10 19.2a2.1 2.1 0 0 0 4 0" /></>
+        : <><rect x="3.5" y="5" width="17" height="15.5" rx="2.6" /><path d="M3.5 10h17M8 3v4M16 3v4M9 15.2l2 2 4-4" /></>}
     </svg>
   );
 }
 
 const Tick = () => <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" /></svg>;
 
-export function AiFlow({ t, start }: { t: Dict; start: string }) {
+export function AiFlow({ t, locale, start }: { t: Dict; locale: Locale; start: string }) {
   const a = t.ai;
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLElement>(null);
   // how far the story has played, 0 to 1 (driven by time once the board is fully on screen, not by scrolling)
   const progressRef = useRef(0);
-  const total = a.items.reduce((sum, [, value]) => sum + value, 0);
 
   // Paint one frame of the story; it runs every animation frame, so it writes to the DOM directly.
   const paint = () => {
@@ -60,35 +64,33 @@ export function AiFlow({ t, start }: { t: Dict; start: string }) {
     if (!root) return;
     const progress = reduced ? 1 : progressRef.current;
 
-    // 1. The photo: a scan line runs down the receipt inside the camera's frame, then the shot is taken.
-    const scan = span(progress, 0.03, 0.17);
-    const photo = root.querySelector<HTMLElement>(".ai-photo")!;
-    photo.style.setProperty("--scan", String(scan));
-    photo.classList.toggle("is-scanning", scan > 0 && scan < 1);
-    photo.classList.toggle("is-on", scan >= 1);
+    // 1. The business's money comes in, one line after another.
+    root.querySelectorAll(".ai-feed li").forEach((row, index) => row.classList.toggle("is-in", progress >= 0.03 + index * 0.035));
 
-    // 2. Morefin AI reads it: each field's line arrives, its card loads from left to right, then the value shows.
-    FIELDS.forEach((field, index) => {
+    // 2. Morefin AI does each job: its line arrives, the card loads from left to right, then it is ticked.
+    JOBS.forEach((job, index) => {
       const begin = 0.19 + index * 0.1;
       const load = span(progress, begin + 0.07, begin + 0.13);
-      const node = root.querySelector<HTMLElement>(`[data-field="${field.key}"]`)!;
+      const node = root.querySelector<HTMLElement>(`[data-job="${job.key}"]`)!;
       node.classList.toggle("is-loading", load > 0 && load < 1);
       node.classList.toggle("is-on", load >= 1);
       node.style.setProperty("--load", String(load));
-      if (field.key === "amount") node.querySelector<HTMLElement>(".if-rule-amount b")!.textContent = group(total * ease(span(progress, begin + 0.13, begin + 0.2)));
       drawWire(root, `in-${index}`, span(progress, begin, begin + 0.07));
       drawWire(root, `out-${index}`, span(progress, 0.69 + index * 0.025, 0.79 + index * 0.025));
     });
-    // the receipt's total is where the amount is read from: it is marked as the amount card loads
-    root.querySelector(".ai-paper-total")!.classList.toggle("is-read", progress >= 0.26);
 
-    // 3. You confirm: the proposal arrives, its button is pressed, and what it updates is ticked off one by one.
-    const ready = ease(span(progress, 0.8, 0.86));
+    // 3. The financier's job fills up: a quarter for each job, counted up to 100%. The bar's four parts grow by
+    //    fractions of its free space (together at most 1), so the empty part is simply the bar showing through.
+    const settle = ease(span(progress, 0.8, 0.9));
+    JOBS.forEach((_, index) => root.style.setProperty(`--slice-${index}`, String(0.25 * settle)));
     const result = root.querySelector<HTMLElement>(".if-result")!;
-    result.classList.toggle("is-on", ready > 0);
-    result.classList.toggle("is-pressed", progress >= 0.89);
-    result.querySelector<HTMLElement>(".if-result-amount b")!.textContent = group(total * ready);
-    result.querySelectorAll("li").forEach((item, index) => item.classList.toggle("is-on", progress >= 0.92 + index * 0.025));
+    result.classList.toggle("is-on", settle > 0);
+    result.classList.toggle("is-done", settle >= 1);
+    result.querySelector<HTMLElement>(".if-result-amount b")!.textContent = String(Math.round(100 * settle));
+
+    // And it never stops: the pill comes in and its three words are ticked one by one.
+    root.querySelector(".ai-always")!.classList.toggle("is-on", progress >= 0.86);
+    root.querySelectorAll(".ai-always li").forEach((item, index) => item.classList.toggle("is-on", progress >= 0.9 + index * 0.04));
   };
   // the story's loop and the wires' measuring always call the latest paint
   const paintRef = useRef(paint);
@@ -97,7 +99,7 @@ export function AiFlow({ t, start }: { t: Dict; start: string }) {
     paint();
   });
 
-  const wires = useWires(rootRef, WIRES, FIELDS.length, paintRef);
+  const wires = useWires(rootRef, WIRES, JOBS.length, paintRef);
   useStoryLoop(rootRef, progressRef, paintRef, reduced, PLAY, PAUSE);
 
   return (
@@ -114,36 +116,33 @@ export function AiFlow({ t, start }: { t: Dict; start: string }) {
           <div className="if-body">
             <div className="if-board">
               <svg className="if-wires" aria-hidden="true">
-                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": FIELDS[w.index].color } as CSSProperties} />)}
-                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={5} style={{ "--tone": FIELDS[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <path key={`${w.role}-${w.index}`} data-wire={`${w.role}-${w.index}`} d={w.d} pathLength={1} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
+                {wires.map((w) => <circle key={`${w.role}-${w.index}`} data-pulse={`${w.role}-${w.index}`} r={5} style={{ "--tone": JOBS[w.index].color } as CSSProperties} />)}
               </svg>
 
               <div className="if-column">
                 <span className="if-step"><i>1</i>{a.steps[0]}</span>
-                <div className="if-node ai-photo">
-                  <span className="ai-photo-status"><i /><span className="ai-when-off">{a.scanning}</span><span className="ai-when-on">{a.scanned}</span></span>
-                  <div className="ai-paper">
-                    <p className="ai-paper-title">{a.receipt}</p>
-                    <hr />
-                    {a.items.map(([name, value]) => <p key={name}><span>{name}</span><span>{group(value)}</span></p>)}
-                    <hr />
-                    <p className="ai-paper-total"><span>{a.total}</span><span>{group(total)}</span></p>
-                    <i className="ai-scan" aria-hidden="true" />
-                    <span className="ai-frame" aria-hidden="true"><i /><i /><i /><i /></span>
+                <div className="if-node ai-feed">
+                  <div className="ai-feed-top">
+                    <span className="ai-live"><i />{a.live}</span>
+                    <small>{a.month}</small>
                   </div>
+                  <ul>
+                    {a.feed.map(([name, value]) => (
+                      <li key={name} data-out={value < 0}><i aria-hidden="true" /><span>{name}</span><b>{millions(value, a.million, locale)}</b></li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
               <div className="if-column">
                 <span className="if-step"><i>2</i><MorefinMark className="ai-star" size={32} />{a.steps[1]}</span>
                 <div className="if-rules">
-                  {FIELDS.map((field) => (
-                    <div className="if-node if-rule" data-field={field.key} key={field.key} style={{ "--tone": field.color } as CSSProperties}>
-                      <span className="if-rule-icon"><FieldIcon kind={field.key} /></span>
-                      <span className="if-rule-name"><b>{a.fields[field.key].name}</b><small>{a.fields[field.key].detail}</small></span>
-                      <span className="if-rule-amount">
-                        {field.key === "amount" ? <span><b>0</b> <small>{t.currency}</small></span> : <span><b>{a.values[field.key]}</b></span>}
-                      </span>
+                  {JOBS.map((job) => (
+                    <div className="if-node if-rule" data-job={job.key} key={job.key} style={{ "--tone": job.color } as CSSProperties}>
+                      <span className="if-rule-icon"><JobIcon kind={job.key} /></span>
+                      <span className="if-rule-name"><b>{a.jobs[job.key].name}</b><small>{a.jobs[job.key].detail}</small></span>
+                      <span className="ai-job-tick"><Tick /></span>
                       <i className="if-rule-load" aria-hidden="true" />
                     </div>
                   ))}
@@ -153,19 +152,29 @@ export function AiFlow({ t, start }: { t: Dict; start: string }) {
               <div className="if-column">
                 <span className="if-step"><i>3</i>{a.steps[2]}</span>
                 <div className="if-node if-result">
-                  <small>{a.proposal}</small>
-                  <strong className="if-result-amount">−<b>0</b> <span>{t.currency}</span></strong>
-                  <span className="ai-result-meta">{a.values.category} · {a.values.account}</span>
-                  <span className="ai-confirm">
-                    <span className="ai-confirm-off">{a.confirm}</span>
-                    <span className="ai-confirm-on"><Tick />{a.confirmed}</span>
-                    <i className="ai-tap" aria-hidden="true" />
-                  </span>
-                  <ul className="ai-updates">
-                    {a.updates.map((line) => <li key={line}><Tick />{line}</li>)}
+                  <small>{a.work}</small>
+                  <strong className="if-result-amount"><b>0</b>%</strong>
+                  <span className="if-split-label">{a.split}</span>
+                  <div className="if-split" aria-hidden="true">
+                    {JOBS.map((job, index) => <i key={job.key} style={{ background: job.color, flexGrow: `var(--slice-${index}, 0)` } as unknown as CSSProperties} />)}
+                  </div>
+                  <ul className="if-legend">
+                    {JOBS.map((job) => <li key={job.key}><i style={{ background: job.color }} />{a.jobs[job.key].short}</li>)}
                   </ul>
+                  <span className="if-done"><Tick />{a.done}</span>
                 </div>
               </div>
+            </div>
+
+            {/* it never stops: a clock that keeps turning, round the clock, and the three words */}
+            <div className="ai-always">
+              <span className="ai-clock" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 12V8.2" /><path className="ai-clock-hand" d="M12 12h4.2" /></svg>
+              </span>
+              <strong>24/7</strong>
+              <ul>
+                {a.always.map((word) => <li key={word}><Tick />{word}</li>)}
+              </ul>
             </div>
 
             <div className="if-cta">
